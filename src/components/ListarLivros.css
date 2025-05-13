@@ -1,0 +1,130 @@
+.separator {
+    position: relative;
+}
+
+.line {
+    border-top: 1px solid #BABABA;
+    width: 250px;
+    margin-bottom: 25px;
+}
+
+.categories {
+    margin-left: 50px;
+    max-width: 200px;
+}
+
+.categories ul li{
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #152D5D;
+}
+
+.container-main {
+    display: flex;
+    /*width: 1200px;*/
+    width: 1500px;
+    margin: 20px auto;
+    padding: 0 100px;
+}
+
+main{
+}
+
+
+.section-livros {
+    display: flex;
+    justify-content: space-between;
+    gap: 35px;
+    flex-wrap: wrap;
+    padding: 10px 10rem;
+    position: relative;
+    top: -178px;
+}
+
+.livro {
+    width: 250px;
+    height: 370px;
+    background-color: #cfcfcf;
+    border-radius: 10px;
+    margin-right: 50px;
+    text-align: center;
+}
+
+.livro img {
+    height: 275px;
+    margin-top: 25px;
+}
+
+.livro h5  {
+    font-size: 20px;
+    margin-top: 8px;
+}
+
+/* Responsivo: Laptops de 1400px a 1200px */
+@media (max-width: 1400px) {
+    .container-main {
+        width: 100%;
+        padding: 0 60px;
+    }
+
+    .section-livros {
+        padding: 10px 4rem;
+        top: -120px;
+        justify-content: center;
+    }
+
+    .livro {
+        width: 230px;
+        height: 360px;
+        margin-right: 30px;
+    }
+
+    .categories {
+        margin-left: 30px;
+        max-width: 180px;
+    }
+}
+
+/* Responsivo: Tablets e celulares menores que 768px */
+@media (max-width: 768px) {
+    .container-main {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 20px;
+        width: 100%;
+    }
+
+    .section-livros {
+        padding: 10px 1rem;
+        top: 0;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .livro {
+        width: 90%;
+        max-width: 320px;
+        height: auto;
+        padding-bottom: 15px;
+        margin-right: 0;
+    }
+
+    .livro img {
+        height: auto;
+        max-height: 250px;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    .categories {
+        margin-left: 0;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .line {
+        width: 100%;
+        margin: 10px auto;
+    }
+}

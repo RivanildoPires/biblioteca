@@ -1,17 +1,18 @@
-import React from 'react';
-import './App.css';
-import LivroList from './components/LivroList';
+import "./App.css";
+import TelaInicial from "./components/TelaInicial";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ListarLivros from "./components/ListarLivros";
+import LivroList from "./components/LivroList"
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Biblioteca Católica</h1>
-      </header>
-      <main>
-        <LivroList />
-      </main>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<TelaInicial />} />
+        <Route path="/livros" element={<ListarLivros />} />
+        <Route path="/listar" element={<LivroList />} />
+      </Routes>
+    </Router>
   );
 }
 
