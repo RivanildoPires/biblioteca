@@ -59,34 +59,44 @@ const ListarLivros = () => {
           </div>
         </nav>
       </header>
-
-      <aside className="categories">
-        <h4>Livros</h4>
-        <div className="separator">
-          <div className="line"></div>
+      <div className="container">
+        <aside className="categories">
+          <h4>Livros</h4>
+          <div className="separator">
+            <div className="line"></div>
+          </div>
+          <ul>
+            <li>Ciências da Computação</li>
+            <li>Direito</li>
+            <li>Educação Fisica</li>
+            <li>Marketing</li>
+            <li>Matemática</li>
+          </ul>
+        </aside>
+        <div className="container-main">
+          <main className="main-content">
+            <section className="section-livros">
+              <div className="livro">
+                <img src={java} alt="" /> <h5>Designer Patterns</h5>
+              </div>
+              <div className="livro">
+                <img src={java} alt="" /> <h5>Designer Patterns</h5>
+              </div>
+              <div className="livro">
+                <img src={java} alt="" /> <h5>Designer Patterns</h5>
+              </div>
+              <div className="livro">
+                <img src={java} alt="" /> <h5>Designer Patterns</h5>
+              </div>
+              <div className="livro">
+                <img src={java} alt="" /> <h5>Designer Patterns</h5>
+              </div>
+              <div className="livro">
+                <img src={java} alt="" /> <h5>Designer Patterns</h5>
+              </div>
+            </section>
+          </main>
         </div>
-        <ul>
-          <li>Ciências da Computação</li>
-          <li>Direito</li>
-          <li>Educação Fisica</li>
-          <li>Marketing</li>
-          <li>Matemática</li>
-        </ul>
-      </aside>
-      <div className="container-main">
-        <main className="main-content">
-          <section className="section-livros">
-            <div className="livro">
-              <img src={java} alt="" /> <h5>Designer Patterns</h5>
-            </div>
-            <div className="livro">
-              <img src={clean} alt="" /> <h5>Clean Code</h5>
-            </div>
-            <div className="livro">
-              <img src={mil} alt="" /> <h5>Mil ao Milhão</h5>
-            </div>
-          </section>
-        </main>
       </div>
       <footer>
         <h3>
