@@ -125,8 +125,6 @@ const LivroList = () => {
         </aside>
         <div className="container-main">
           <main className="main-content">
-            <h2>Lista de Livros</h2>
-
             {livros.length === 0 ? (
               <p>Nenhum livro cadastrado.</p>
             ) : (
@@ -138,18 +136,6 @@ const LivroList = () => {
                       alt={`Capa do livro ${livro.titulo}`}
                     />
                     <h5>{livro.titulo}</h5>
-                    <p>
-                      <strong>Autor:</strong> {livro.autor}
-                    </p>
-                    <p>
-                      <strong>Área:</strong> {livro.area}
-                    </p>
-                    <p>
-                      <strong>Editora:</strong> {livro.editora}
-                    </p>
-                    <p>
-                      <strong>Ano:</strong> {livro.anoPublicado}
-                    </p>
                   </div>
                 ))}
               </section>
