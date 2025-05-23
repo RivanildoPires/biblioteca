@@ -130,7 +130,7 @@ const LivroList = () => {
             ) : (
               <section className="section-livros">
                 {livros.map((livro) => (
-                  <div className="livro" key={livro.uuid || livro.id}>
+                  <div className="livro" key={livro.id}>
                     <img
                       src={livro.imagem || java}
                       alt={`Capa do livro ${livro.titulo}`}
