@@ -6,10 +6,64 @@ import usuario from "../assets/usuario.png";
 import sair from "../assets/sair.png";
 import java from "../assets/java.png";
 import { Link } from "react-router-dom";
-import clean from "../assets/clean.png";
-import mil from "../assets/mil.png";
+import axios from "axios";
 
-const ListarLivros = () => {
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+});
+
+const LivroList = () => {
+  const [livros, setLivros] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchLivros = async () => {
+    try {
+      const response = await api.get("/livro");
+
+      if (response.status === 204) {
+        setError("Nenhum livro encontrado");
+        setLivros([]);
+      } else {
+        setLivros(response.data);
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message || err.message || "Erro ao buscar livros"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+
+    fetchLivros();
+
+    const intervalId = setInterval(fetchLivros, 200000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="loading">
+        <p>Carregando livros...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error">
+        <p>Erro: {error}</p>
+        <button onClick={() => window.location.reload()}>
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <header>
@@ -59,6 +113,7 @@ const ListarLivros = () => {
           </div>
         </nav>
       </header>
+
       <div className="container">
         <aside className="categories">
           <h4>Livros</h4>
@@ -75,26 +130,21 @@ const ListarLivros = () => {
         </aside>
         <div className="container-main">
           <main className="main-content">
-            <section className="section-livros">
-              <div className="livro">
-                <img src={java} alt="" /> <h5>Designer Patterns</h5>
-              </div>
-              <div className="livro">
-                <img src={java} alt="" /> <h5>Designer Patterns</h5>
-              </div>
-              <div className="livro">
-                <img src={java} alt="" /> <h5>Designer Patterns</h5>
-              </div>
-              <div className="livro">
-                <img src={java} alt="" /> <h5>Designer Patterns</h5>
-              </div>
-              <div className="livro">
-                <img src={java} alt="" /> <h5>Designer Patterns</h5>
-              </div>
-              <div className="livro">
-                <img src={java} alt="" /> <h5>Designer Patterns</h5>
-              </div>
-            </section>
+            {livros.length === 0 ? (
+              <p>Nenhum livro cadastrado.</p>
+            ) : (
+              <section className="section-livros">
+                {livros.map((livro) => (
+                  <div className="livro" key={livro.id}>
+                    <img
+                      src={livro.imagem || java}
+                      alt={`Capa do livro ${livro.titulo}`}
+                    />
+                    <h5>{livro.titulo}</h5>
+                  </div>
+                ))}
+              </section>
+            )}
           </main>
         </div>
       </div>
@@ -107,4 +157,4 @@ const ListarLivros = () => {
   );
 };
 
-export default ListarLivros;
+export default LivroList;
