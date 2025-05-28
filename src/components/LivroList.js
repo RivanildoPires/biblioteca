@@ -17,27 +17,32 @@ const LivroList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchLivros = async () => {
-      try {
-        const response = await api.get("/livro");
+  const fetchLivros = async () => {
+    try {
+      const response = await api.get("/livro");
 
-        if (response.status === 204) {
-          setError("Nenhum livro encontrado");
-          setLivros([]);
-        } else {
-          setLivros(response.data);
-        }
-      } catch (err) {
-        setError(
-          err.response?.data?.message || err.message || "Erro ao buscar livros"
-        );
-      } finally {
-        setLoading(false);
+      if (response.status === 204) {
+        setError("Nenhum livro encontrado");
+        setLivros([]);
+      } else {
+        setLivros(response.data);
       }
-    };
+    } catch (err) {
+      setError(
+        err.response?.data?.message || err.message || "Erro ao buscar livros"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
 
     fetchLivros();
+
+    const intervalId = setInterval(fetchLivros, 300000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {
