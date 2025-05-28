@@ -40,7 +40,7 @@ const LivroList = () => {
 
     fetchLivros();
 
-    const intervalId = setInterval(fetchLivros, 300000);
+    const intervalId = setInterval(fetchLivros, 200000);
 
     return () => clearInterval(intervalId);
   }, []);
