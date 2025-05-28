@@ -14,11 +14,6 @@ const TelaLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (matricula.length < 3 || password.length < 6) {
-      setError("Matrícula ou senha inválidos.");
-      return;
-    }
-
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/login`,

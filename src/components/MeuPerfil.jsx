@@ -1,42 +1,146 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MeuPerfil.css";
-import LopeLindo from "../assets/LopeLindo.jpg";
-import fotinha from "../assets/foto.png";
 import MacianoYasuo from "../assets/MacianoYasuo.jpg";
+import api from "../api";
 
 const MeuPerfil = ({ isOpen, onClose }) => {
-  const[nome, setNome] = useState("");
-  const[email, setEmail] = useState("");
-  const[telefone, setTelefone] = useState("");
+  const [formData, setFormData] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    matricula: "",
+    tipoUsuario: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
+  useEffect(() => {
+    if (isOpen) {
+      carregarDadosUsuario();
+    }
+  }, [isOpen]);
 
-  if (isOpen) {
-    return (
-      <div className="container-modal">
-        <div className="conteudo">
-          <div className="btn-close">
-            <button onClick={onClose}>X</button>
-          </div>
-          <div className="cont-info">
-            <img src={MacianoYasuo} alt="" />
-            <div className="form-container">
-              <p className="text">Alterar Perfil</p>
-              <form>
-                <input type="text" value={nome}/>
-                <input type="text" value={email}/>
-                <input type="text" value={telefone} />
-              </form>
-              <div className="send">
-                <button>Salvar</button>
+  const carregarDadosUsuario = async () => {
+    try {
+      const usuarioId = localStorage.getItem("usuarioId");
+      if (!usuarioId) {
+        setError("Usuário não autenticado");
+        return;
+      }
+
+      const response = await api.get(`/usuario/${usuarioId}`);
+      const usuario = response.data;
+
+      setFormData({
+        nome: usuario.nome,
+        email: usuario.email,
+        telefone: usuario.telefone,
+      });
+    } catch (error) {
+      console.error("Erro ao carregar dados do usuário:", error);
+      setError("Erro ao carregar dados do perfil");
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const usuarioId = localStorage.getItem("usuarioId");
+      if (!usuarioId) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      const dadosParaEnviar = {
+        nome: formData.nome,
+        email: formData.email,
+        telefone: formData.telefone
+      };
+
+      await api.put(`/usuario/${usuarioId}`, dadosParaEnviar);
+
+      localStorage.setItem("nomeUsuario", formData.nome);
+  
+      await carregarDadosUsuario();
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      setError(error.response?.data?.message || "Erro ao atualizar perfil");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div className="container-modal">
+      <div className="conteudo">
+        <div className="btn-close">
+          <button onClick={onClose}>X</button>
+        </div>
+        <div className="cont-info">
+          <img src={MacianoYasuo} alt="Foto do perfil" />
+          <div className="form-container">
+            <p className="text">Alterar Perfil</p>
+            {error && <p className="error-message">{error}</p>}
+            {success && <p className="success-message">{success}</p>}
+            
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="nome"
+                  value={formData.nome}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            </div>
+              
+              <div className="form-group">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <input
+                  type="tel"
+                  name="telefone"
+                  value={formData.telefone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="send">
+                <button type="submit" disabled={loading}>
+                  {loading ? "Salvando..." : "Salvar Alterações"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 };
 
 export default MeuPerfil;
