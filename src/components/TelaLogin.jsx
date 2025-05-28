@@ -8,14 +8,21 @@ import { useNavigate } from "react-router-dom";
 const TelaLogin = () => {
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validação simples
+    if (matricula.length < 3 || password.length < 6) {
+      setError("Matrícula ou senha inválidos.");
+      return;
+    }
+
     try {
       const response = await axios.post(
-        "http://localhost:3001/login",
+        `${process.env.REACT_APP_API_URL}/login`,
         { matricula, password }
       );
 
@@ -25,18 +32,22 @@ const TelaLogin = () => {
       localStorage.setItem("tipoUsuario", data.tipoUsuario);
       localStorage.setItem("nomeUsuario", data.nome);
 
-      if (data.tipoUsuario === "BIBLIOTECARIO") {
-        navigate("/");
-      } else if (data.tipoUsuario === "PROFESSOR") {
-        navigate("/");
-      } else if (data.tipoUsuario === "ALUNO") {
-        navigate("/");
-      } else {
-        navigate("/material");
+      switch (data.tipoUsuario) {
+        case "BIBLIOTECARIO":
+          navigate("/");
+          break;
+        case "PROFESSOR":
+          navigate("/tcc");
+          break;
+        case "ALUNO":
+          navigate("/material");
+          break;
+        default:
+          navigate("/material");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
-      alert("Login inválido. Verifique a matrícula e a senha.");
+      setError("Login inválido. Verifique a matrícula e a senha.");
     }
   };
 
@@ -67,6 +78,7 @@ const TelaLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                {error && <p className="error-message">{error}</p>}
                 <a href="#">Esqueceu a sua senha?</a>
                 <input id="submit" type="submit" value="Entrar" />
               </form>
