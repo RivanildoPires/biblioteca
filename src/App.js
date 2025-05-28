@@ -9,7 +9,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<TelaLogin />} />
+        <Route path="/" element={<TelaInicial />} />
         <Route path="/livros" element={<ListarLivros />} />
         <Route path="/listar" element={<LivroList />} />
       </Routes>
