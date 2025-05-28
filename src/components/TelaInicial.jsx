@@ -6,6 +6,7 @@ import usuario from "../assets/usuario.png";
 import sair from "../assets/sair.png";
 import { Link } from "react-router-dom";
 import Header from "./Header";
+import Footer from "./Footer";
 
 const TelaInicial = () => {
   const [name, setName] = useState("Rivanildo");
@@ -57,11 +58,7 @@ const TelaInicial = () => {
         </div>
       </main>
 
-      <footer>
-        <h3>
-          Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
-        </h3>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -4,8 +4,12 @@ import usuario from "../assets/usuario.png";
 import sair from "../assets/sair.png";
 import "./Header.css";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import MeuPerfil from "./MeuPerfil";
 
 const Header = () => {
+  const [openModal, setOpenModal] = useState(false);
+
   return (
     <div>
       <header>
@@ -22,17 +26,26 @@ const Header = () => {
               <ul className="list">
                 <li>
                   <img className="livro-img" src={livro} alt="livrinho" />
-                  <a href="#">
+                  <button onClick={() => setOpenModal(true)}>
                     Livros <br />
                     Reservado
-                  </a>
+                  </button>
+
+                  <MeuPerfil
+                    isOpen={openModal}
+                    onClose={() => setOpenModal(false)}
+                  />
                 </li>
                 <li>
                   <img className="usuario-img" src={usuario} alt="usuario" />{" "}
-                  <a href="#">
+                  <button onClick={() => setOpenModal(true)}>
                     Meu <br />
                     Perfil
-                  </a>
+                  </button>
+                  <MeuPerfil
+                    isOpen={openModal}
+                    onClose={() => setOpenModal(false)}
+                  />
                 </li>
                 <li>
                   <a href="#">
