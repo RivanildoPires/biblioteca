@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<TelaInicial />} />
         <Route path="/livros" element={<ListarLivros />} />
-        <Route path="/livro" element={<Livro />} />
+        <Route path="/livro/:id" element={<Livro />} />
         <Route path="/tcc" element={<ListarTCC />} />
         <Route path="/material" element={<Material />} />
       </Routes>
