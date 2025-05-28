@@ -14,7 +14,6 @@ const TelaLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validação simples
     if (matricula.length < 3 || password.length < 6) {
       setError("Matrícula ou senha inválidos.");
       return;
@@ -43,7 +42,7 @@ const TelaLogin = () => {
           navigate("/material");
           break;
         default:
-          navigate("/material");
+          navigate("/livros");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
