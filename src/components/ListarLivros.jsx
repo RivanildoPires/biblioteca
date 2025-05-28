@@ -10,7 +10,6 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 
-
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
 });
@@ -40,7 +39,6 @@ const LivroList = () => {
   };
 
   useEffect(() => {
-
     fetchLivros();
 
     const intervalId = setInterval(fetchLivros, 200000);
@@ -92,13 +90,15 @@ const LivroList = () => {
             ) : (
               <section className="section-livros">
                 {livros.map((livro) => (
-                  <div className="livro" key={livro.id}>
-                    <img
-                      src={livro.imagem || java}
-                      alt={`Capa do livro ${livro.titulo}`}
-                    />
-                    <h5>{livro.titulo}</h5>
-                  </div>
+                  <Link key={livro.idLivro} to={`/livro/${livro.idLivro}`}>
+                    <div className="livro">
+                      <img
+                        src={livro.imagem || java}
+                        alt={`Capa do livro ${livro.titulo}`}
+                      />
+                      <h5>{livro.titulo}</h5>
+                    </div>
+                  </Link>
                 ))}
               </section>
             )}
