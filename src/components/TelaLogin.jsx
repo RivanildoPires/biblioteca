@@ -15,7 +15,7 @@ const TelaLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/usuarios/login",
+        "http://localhost:3001/login",
         { matricula, password }
       );
 
