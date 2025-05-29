@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./MeuPerfil.css";
 import MacianoYasuo from "../assets/MacianoYasuo.jpg";
 import api from "../api";
+import { useNavigate } from "react-router-dom";
 
 const MeuPerfil = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -11,10 +12,10 @@ const MeuPerfil = ({ isOpen, onClose }) => {
     matricula: "",
     tipoUsuario: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
@@ -22,24 +23,33 @@ const MeuPerfil = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const carregarDadosUsuario = () => {
+  const carregarDadosUsuario = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
 
-      if (!userData) {
-        setError("Dados do usuário não encontrados");
-        return;
-      }
+      if (userData) {
+        setFormData({
+          nome: userData.nome || "",
+          email: userData.email || "",
+          telefone: userData.telefone || "",
+          matricula: userData.matricula || "",
+          tipoUsuario: userData.tipo || userData.tipoUsuario || "",
+        });
+      } else {
+        const usuarioId = localStorage.getItem("usuarioId");
+        if (!usuarioId) throw new Error("Usuário não autenticado");
 
-      setFormData({
-        nome: userData.nome || "",
-        email: userData.email || "",
-        telefone: userData.telefone || "",
-        matricula: userData.matricula || "",
-        tipoUsuario: userData.tipo || "",
-      });
+        const response = await api.get(`/usuario/${usuarioId}`);
+        setFormData({
+          nome: response.data.nome,
+          email: response.data.email,
+          telefone: response.data.telefone,
+          matricula: response.data.matricula,
+          tipoUsuario: response.data.tipoUsuario,
+        });
+      }
     } catch (error) {
-      console.error("Erro ao carregar dados do localStorage:", error);
+      console.error("Erro ao carregar dados:", error);
       setError("Erro ao carregar perfil");
     }
   };
@@ -60,61 +70,78 @@ const MeuPerfil = ({ isOpen, onClose }) => {
 
     try {
       const usuarioId = localStorage.getItem("usuarioId");
-      if (!usuarioId) {
-        throw new Error("Usuário não autenticado");
+      if (!usuarioId) throw new Error("Usuário não autenticado");
+
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      if (
+        userData &&
+        userData.nome === formData.nome &&
+        userData.email === formData.email &&
+        userData.telefone === formData.telefone
+      ) {
+        setSuccess("Nenhuma alteração detectada");
+        return;
       }
-      const dadosParaEnviar = {
+
+      const response = await api.put(`/usuario/${usuarioId}`, {
+        nome: formData.nome,
+        email: formData.email,
+        telefone: formData.telefone,
+      });
+
+      // Atualiza localStorage com os novos dados
+      const updatedUser = {
+        ...JSON.parse(localStorage.getItem("userData")),
         nome: formData.nome,
         email: formData.email,
         telefone: formData.telefone,
       };
-
-      await api.put(`/usuario/${usuarioId}`, dadosParaEnviar);
-
-      const updatedUserData = {
-        ...JSON.parse(localStorage.getItem("userData")),
-        ...dadosParaEnviar,
-      };
-      localStorage.setItem("userData", JSON.stringify(updatedUserData));
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
 
       setSuccess("Perfil atualizado com sucesso!");
-      setTimeout(() => onClose(), 1500);
+      setTimeout(() => onClose(), 2000);
     } catch (error) {
-      console.error("Erro ao atualizar perfil:", error);
-      setError(error.response?.data?.message || "Erro ao atualizar perfil");
+      console.error("Erro na atualização:", error);
+      setError(
+        error.response?.data?.message ||
+          "Erro ao atualizar perfil. Tente novamente."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
     <div className="container-modal">
       <div className="conteudo">
         <div className="btn-close">
-          <button onClick={onClose}>X</button>
+          <button onClick={onClose}>✕</button>
         </div>
         <div className="cont-info">
-          <img src={MacianoYasuo} alt="Foto do perfil" />
+          <img
+            src={MacianoYasuo}
+            alt="Foto do perfil"
+            className="profile-img"
+          />
           <div className="form-container">
             <h2 className="text">Meu Perfil</h2>
 
-            {error && <p className="error-message">{error}</p>}
-            {success && <p className="success-message">{success}</p>}
+            {error && <div className="alert error">{error}</div>}
+            {success && <div className="alert success">{success}</div>}
 
             <form onSubmit={handleSubmit}>
               <input
+                id="nome"
                 type="text"
                 name="nome"
                 value={formData.nome}
                 onChange={handleChange}
                 required
               />
-
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={formData.email}
@@ -123,16 +150,30 @@ const MeuPerfil = ({ isOpen, onClose }) => {
               />
 
               <input
+                id="telefone"
                 type="tel"
                 name="telefone"
                 value={formData.telefone}
                 onChange={handleChange}
                 required
+                pattern="[0-9]{10,11}"
+                title="Digite um telefone válido (10 ou 11 dígitos)"
               />
 
               <div className="send">
-                <button type="submit" disabled={loading}>
-                  {loading ? "Salvando..." : "Salvar Alterações"}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={loading ? "loading" : ""}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner"></span>
+                      Salvando...
+                    </>
+                  ) : (
+                    "Salvar Alterações"
+                  )}
                 </button>
               </div>
             </form>
