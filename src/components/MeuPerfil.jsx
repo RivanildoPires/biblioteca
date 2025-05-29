@@ -9,8 +9,9 @@ const MeuPerfil = ({ isOpen, onClose }) => {
     email: "",
     telefone: "",
     matricula: "",
-    tipoUsuario: ""
+    tipoUsuario: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -21,33 +22,33 @@ const MeuPerfil = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const carregarDadosUsuario = async () => {
+  const carregarDadosUsuario = () => {
     try {
-      const usuarioId = localStorage.getItem("usuarioId");
-      if (!usuarioId) {
-        setError("Usuário não autenticado");
+      const userData = JSON.parse(localStorage.getItem("userData"));
+
+      if (!userData) {
+        setError("Dados do usuário não encontrados");
         return;
       }
 
-      const response = await api.get(`/usuario/${usuarioId}`);
-      const usuario = response.data;
-
       setFormData({
-        nome: usuario.nome,
-        email: usuario.email,
-        telefone: usuario.telefone,
+        nome: userData.nome || "",
+        email: userData.email || "",
+        telefone: userData.telefone || "",
+        matricula: userData.matricula || "",
+        tipoUsuario: userData.tipo || "",
       });
     } catch (error) {
-      console.error("Erro ao carregar dados do usuário:", error);
-      setError("Erro ao carregar dados do perfil");
+      console.error("Erro ao carregar dados do localStorage:", error);
+      setError("Erro ao carregar perfil");
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -62,18 +63,22 @@ const MeuPerfil = ({ isOpen, onClose }) => {
       if (!usuarioId) {
         throw new Error("Usuário não autenticado");
       }
-
       const dadosParaEnviar = {
         nome: formData.nome,
         email: formData.email,
-        telefone: formData.telefone
+        telefone: formData.telefone,
       };
 
       await api.put(`/usuario/${usuarioId}`, dadosParaEnviar);
 
-      localStorage.setItem("nomeUsuario", formData.nome);
-  
-      await carregarDadosUsuario();
+      const updatedUserData = {
+        ...JSON.parse(localStorage.getItem("userData")),
+        ...dadosParaEnviar,
+      };
+      localStorage.setItem("userData", JSON.stringify(updatedUserData));
+
+      setSuccess("Perfil atualizado com sucesso!");
+      setTimeout(() => onClose(), 1500);
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
       setError(error.response?.data?.message || "Erro ao atualizar perfil");
@@ -95,41 +100,36 @@ const MeuPerfil = ({ isOpen, onClose }) => {
         <div className="cont-info">
           <img src={MacianoYasuo} alt="Foto do perfil" />
           <div className="form-container">
-            <p className="text">Alterar Perfil</p>
+            <h2 className="text">Meu Perfil</h2>
+
             {error && <p className="error-message">{error}</p>}
             {success && <p className="success-message">{success}</p>}
-            
+
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="nome"
-                  value={formData.nome}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <input
-                  type="tel"
-                  name="telefone"
-                  value={formData.telefone}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              
+              <input
+                type="text"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                type="tel"
+                name="telefone"
+                value={formData.telefone}
+                onChange={handleChange}
+                required
+              />
+
               <div className="send">
                 <button type="submit" disabled={loading}>
                   {loading ? "Salvando..." : "Salvar Alterações"}

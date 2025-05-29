@@ -22,9 +22,13 @@ const TelaLogin = () => {
 
       const data = response.data;
 
-      localStorage.setItem("usuarioId", data.idUsuario);
-      localStorage.setItem("tipoUsuario", data.tipoUsuario);
-      localStorage.setItem("nomeUsuario", data.nome);
+      localStorage.setItem("userData", JSON.stringify({
+        id: data.idUsuario,
+        tipo: data.tipoUsuario,
+        nome: data.nome,
+        email: data.email || "",
+        telefone: data.telefone || "",
+      }));
 
       switch (data.tipoUsuario) {
         case "BIBLIOTECARIO":
