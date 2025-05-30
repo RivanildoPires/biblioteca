@@ -18,7 +18,7 @@ const Header = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
       setIsBibliotecario(
-        userData.tipo === "Bibliotecario" || userData.tipoUsuario === "Bibliotecario"
+        userData.tipo === "bibliotecario" || userData.tipoUsuario === "bibliotecario"
       );
     }
   }, []);
