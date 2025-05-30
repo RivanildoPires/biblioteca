@@ -4,11 +4,12 @@ import api from "../api";
 
 const CadastrarUsuario = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
+    matricula: "",
+    password: "",
     nome: "",
     email: "",
     telefone: "",
-    matricula: "",
-    tipoUsuario: "Aluno",
+    tipoUsuario: "aluno",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,11 +33,12 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
       const response = await api.post("/usuario", formData);
       setSuccess("Usuário cadastrado com sucesso!");
       setFormData({
+        matricula: "",
+        password: "",
         nome: "",
         email: "",
         telefone: "",
-        matricula: "",
-        tipoUsuario: "Aluno",
+        tipoUsuario: "aluno",
       });
       setTimeout(() => onClose(), 2000);
     } catch (error) {
@@ -67,6 +69,24 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
           <form onSubmit={handleSubmit}>
             <input
               type="text"
+              name="matricula"
+              value={formData.matricula}
+              onChange={handleChange}
+              placeholder="Matrícula"
+              required
+            />
+
+            <input
+              type="password"
+              name="password"
+              value={formData.password} 
+              onChange={handleChange}
+              placeholder="Senha"
+              required
+            />
+
+            <input
+              type="text"
               name="nome"
               value={formData.nome}
               onChange={handleChange}
@@ -91,24 +111,16 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
               pattern="[0-9]{10,11}"
               title="Digite um telefone válido (10 ou 11 dígitos)"
             />
-            <input
-              type="text"
-              name="matricula"
-              value={formData.matricula}
-              onChange={handleChange}
-              placeholder="Matrícula"
-              required
-            />
-
+            
             <select
               name="tipoUsuario"
               value={formData.tipoUsuario}
               onChange={handleChange}
               required
             >
-              <option value="Bibliotecario">Bibliotecário</option>
-              <option value="Professor">Professor</option>
-              <option value="Aluno">Aluno</option>
+              <option value="bibliotecario">Bibliotecário</option>
+              <option value="professor">Professor</option>
+              <option value="aluno">Aluno</option>
             </select>
 
             <div className="send">
