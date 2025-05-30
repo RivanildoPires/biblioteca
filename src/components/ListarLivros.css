@@ -33,14 +33,16 @@
 .livro {
   width: 250px;
   height: 370px;
-  background-color: #cfcfcf;
+  background-color: #FAFAFA;
   border-radius: 10px;
+  border: 1px solid #000;
   text-align: center;
 }
 
 .livro img {
   height: 275px;
   margin-top: 25px;
+  border: 1px solid #000;
 }
 
 .livro h5 {
@@ -55,7 +57,7 @@
 
 @media (max-width: 1400px) {
   .section-livros {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .container {

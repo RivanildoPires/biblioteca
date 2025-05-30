@@ -4,11 +4,24 @@ import usuario from "../assets/usuario.png";
 import sair from "../assets/sair.png";
 import "./Header.css";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MeuPerfil from "./MeuPerfil";
+import CadastrarUsuario from "./CadastrarUsuario";
+import cadastroU from "../assets/cadastroU.png";
 
 const Header = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalPerfil, setOpenModalPerfil] = useState(false);
+  const [openModalCadastro, setOpenModalCadastro] = useState(false);
+  const [isBibliotecario, setIsBibliotecario] = useState(false);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (userData) {
+      setIsBibliotecario(
+        userData.tipo === "Bibliotecario" || userData.tipoUsuario === "Bibliotecario"
+      );
+    }
+  }, []);
 
   return (
     <div>
@@ -16,40 +29,58 @@ const Header = () => {
         <nav className="nav-bar">
           <div className="navbar-inner">
             <div className="navbar-top">
-              <Link to={"/"}>
+              <Link to={"/telaInicial"}>
                 <img src={logo} alt="logo-biblioteca" />
               </Link>
 
-              <form className="form">
-                <input type="text" placeholder="Buscar..." />
-              </form>
+              {isBibliotecario ? (
+                <h2 className="bem-vindo">Bem-vindo</h2>
+              ) : (
+                <form className="form">
+                  <input type="text" placeholder="Buscar..." />
+                </form>
+              )}
+
               <ul className="list">
+                {isBibliotecario && (
+                  <li>
+                    <img className="livro-img" src={cadastroU} alt="cadastroU" />
+                    <button onClick={() => setOpenModalCadastro(true)}>
+                      Cadastrar <br />
+                      Usuário
+                    </button>
+                    <CadastrarUsuario
+                      isOpen={openModalCadastro}
+                      onClose={() => setOpenModalCadastro(false)}
+                    />
+                  </li>
+                )}
                 <li>
                   <img className="livro-img" src={livro} alt="livrinho" />
-                  <button onClick={() => setOpenModal(true)}>
+                  <button onClick={() => setOpenModalPerfil(true)}>
                     Livros <br />
                     Reservado
                   </button>
 
                   <MeuPerfil
-                    isOpen={openModal}
-                    onClose={() => setOpenModal(false)}
+                    isOpen={openModalPerfil}
+                    onClose={() => setOpenModalPerfil(false)}
                   />
                 </li>
                 <li>
-                  <img className="usuario-img" src={usuario} alt="usuario" />{" "}
-                  <button onClick={() => setOpenModal(true)}>
+                  <img className="usuario-img" src={usuario} alt="usuario" />
+                  <button onClick={() => setOpenModalPerfil(true)}>
                     Meu <br />
                     Perfil
                   </button>
                   <MeuPerfil
-                    isOpen={openModal}
-                    onClose={() => setOpenModal(false)}
+                    isOpen={openModalPerfil}
+                    onClose={() => setOpenModalPerfil(false)}
                   />
                 </li>
                 <li>
                   <a href="#">
-                    <img className="sair-img" src={sair} alt="" />
+                    <img className="sair-img" src={sair} alt="sair" />
                   </a>
                 </li>
               </ul>

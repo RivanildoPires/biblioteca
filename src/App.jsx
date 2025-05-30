@@ -10,12 +10,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<TelaInicial />} />
+        <Route path="/telaInicial" element={<TelaInicial />} />
         <Route path="/livros" element={<ListarLivros />} />
         <Route path="/livro/:id" element={<Livro />} />
         <Route path="/tcc" element={<ListarTCC />} />
         <Route path="/material" element={<Material />} />
-        <Route path="/login" element={<TelaLogin />}/>
+        <Route path="/" element={<TelaLogin />}/>
       </Routes>
     </Router>
   );

@@ -48,9 +48,9 @@ const Livro = () => {
             <div className="livro-info">
               <img src={java} alt="Livro" />
               <ul>
-                <li>Autor: <p>{livro.autor}</p></li>
-                <li>Publicado: <p>{livro.anoPublicado}</p></li>
-                <li>Editora: <p>{livro.editora}</p></li>
+                <li>Autor: {livro.autor}</li>
+                <li>Publicado: {livro.anoPublicado}</li>
+                <li>Editora:{livro.editora}</li>
               </ul>
             </div>
             <div className="livro-sinopse">
@@ -65,7 +65,7 @@ const Livro = () => {
                 dia. Este livro pertence à instituição, portanto, o discente
                 deve ter cuidado e devolvê-lo em perfeito estado. Após a
                 reserva, o aluno terá uma semana para ler e devolver o
-                livro. Em caso de atraso, será aplicada uma multa.
+                livro. Em caso de atraso, será aplicada uma multa.<span>So é possivel reservar um exemplar!</span>
               </p>
             </div>
           </section>

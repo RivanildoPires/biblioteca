@@ -32,16 +32,16 @@ const TelaLogin = () => {
 
       switch (data.tipoUsuario) {
         case "BIBLIOTECARIO":
-          navigate("/");
+          navigate("/telaInicialB");
           break;
         case "PROFESSOR":
-          navigate("/tcc");
+          navigate("/telaInicialP");
           break;
         case "ALUNO":
-          navigate("/material");
+          navigate("/telaInicial");
           break;
         default:
-          navigate("/livros");
+          navigate("/telaInicial");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);

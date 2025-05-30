@@ -41,6 +41,10 @@
     width: 700px;
     border-radius: 10px;
     border: 1px solid black;
+    min-height: 400px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
 }
 
 .livro-sinopse h5 {
@@ -57,7 +61,8 @@
 }
 
 .livro-sinopse button {
-    margin: 20px 220px;
+    display: block;
+    margin: 20px auto;
     padding: 10px 45px;
     background-color: #152D5D;
     color: white;
@@ -94,3 +99,8 @@
     font-weight: normal;
 }
 
+.span {
+    color: #152D5D;
+    font-size: 17px;
+    text-transform: uppercase;
+}

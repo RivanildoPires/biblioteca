@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./MeuPerfil.css";
 import MacianoYasuo from "../assets/MacianoYasuo.jpg";
 import api from "../api";
-import { useNavigate } from "react-router-dom";
+
 
 const MeuPerfil = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const MeuPerfil = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (isOpen) {
@@ -89,7 +89,6 @@ const MeuPerfil = ({ isOpen, onClose }) => {
         telefone: formData.telefone,
       });
 
-      // Atualiza localStorage com os novos dados
       const updatedUser = {
         ...JSON.parse(localStorage.getItem("userData")),
         nome: formData.nome,
