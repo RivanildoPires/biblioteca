@@ -32,10 +32,10 @@ const TelaLogin = () => {
 
       switch (data.tipoUsuario) {
         case "BIBLIOTECARIO":
-          navigate("/telaInicialB");
+          navigate("/telaInicial");
           break;
         case "PROFESSOR":
-          navigate("/telaInicialP");
+          navigate("/telaInicial");
           break;
         case "ALUNO":
           navigate("/telaInicial");

@@ -10,18 +10,24 @@ import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
 
 const Header = () => {
-  const [openModalPerfil, setOpenModalPerfil] = useState(false);
-  const [openModalCadastro, setOpenModalCadastro] = useState(false);
-  const [isBibliotecario, setIsBibliotecario] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (userData) {
-      setIsBibliotecario(
-        userData.tipo === "bibliotecario" || userData.tipoUsuario === "bibliotecario"
-      );
-    }
+    const user = JSON.parse(localStorage.getItem("userData"));
+    setUserData(user);
   }, []);
+
+  const openModalHandler = (type) => {
+    setModalType(type);
+    setOpenModal(true);
+  };
+
+  const closeModalHandler = () => {
+    setOpenModal(false);
+    setModalType("");
+  };
 
   return (
     <div>
@@ -33,8 +39,8 @@ const Header = () => {
                 <img src={logo} alt="logo-biblioteca" />
               </Link>
 
-              {isBibliotecario ? (
-                <h2 className="bem-vindo">Bem-vindo</h2>
+              {userData?.tipo === "BIBLIOTECARIO" ? (
+                <h3>Bem-vindo, {userData.nome}</h3>
               ) : (
                 <form className="form">
                   <input type="text" placeholder="Buscar..." />
@@ -42,42 +48,41 @@ const Header = () => {
               )}
 
               <ul className="list">
-                {isBibliotecario && (
+                {userData?.tipo === "BIBLIOTECARIO" && (
                   <li>
                     <img className="livro-img" src={cadastroU} alt="cadastroU" />
-                    <button onClick={() => setOpenModalCadastro(true)}>
+                    <button onClick={() => openModalHandler("cadastrar")}>
                       Cadastrar <br />
                       Usuário
                     </button>
-                    <CadastrarUsuario
-                      isOpen={openModalCadastro}
-                      onClose={() => setOpenModalCadastro(false)}
-                    />
+                    {modalType === "cadastrar" && (
+                      <CadastrarUsuario isOpen={openModal} onClose={closeModalHandler} />
+                    )}
                   </li>
                 )}
+
                 <li>
                   <img className="livro-img" src={livro} alt="livrinho" />
-                  <button onClick={() => setOpenModalPerfil(true)}>
+                  <button onClick={() => openModalHandler("livros")}>
                     Livros <br />
                     Reservado
                   </button>
-
-                  <MeuPerfil
-                    isOpen={openModalPerfil}
-                    onClose={() => setOpenModalPerfil(false)}
-                  />
+                  {modalType === "livros" && (
+                    <MeuPerfil isOpen={openModal} onClose={closeModalHandler} />
+                  )}
                 </li>
+
                 <li>
                   <img className="usuario-img" src={usuario} alt="usuario" />
-                  <button onClick={() => setOpenModalPerfil(true)}>
+                  <button onClick={() => openModalHandler("perfil")}>
                     Meu <br />
                     Perfil
                   </button>
-                  <MeuPerfil
-                    isOpen={openModalPerfil}
-                    onClose={() => setOpenModalPerfil(false)}
-                  />
+                  {modalType === "perfil" && (
+                    <MeuPerfil isOpen={openModal} onClose={closeModalHandler} />
+                  )}
                 </li>
+
                 <li>
                   <a href="#">
                     <img className="sair-img" src={sair} alt="sair" />
@@ -85,7 +90,9 @@ const Header = () => {
                 </li>
               </ul>
             </div>
+
             <hr />
+
             <table className="table">
               <tr>
                 <Link to={"/livros"}>
