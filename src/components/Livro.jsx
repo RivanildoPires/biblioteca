@@ -54,8 +54,10 @@ const Livro = () => {
               </ul>
             </div>
             <div className="livro-sinopse">
+              <div className="sinpose-content">
               <h5>Sinopse</h5>
               <p>{livro.sinopse}</p>
+              </div>
               <button>Reservar</button>
             </div>
             <div className="aviso">

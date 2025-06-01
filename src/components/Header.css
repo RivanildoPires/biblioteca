@@ -11,6 +11,8 @@
   font-size: 35px;
   color: #1C3B79;
   font-weight: bold;
+  display: flex;
+  align-items: center;
 }
 .navbar-inner {
   display: flex;

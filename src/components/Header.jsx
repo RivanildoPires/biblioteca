@@ -118,8 +118,6 @@ const Header = () => {
                 <li>
                   <button onClick={handleLogout} className="logout-button">
                     <img className="sair-img" src={sair} alt="sair" />
-                    <br />
-                    Sair
                   </button>
                 </li>
               </ul>

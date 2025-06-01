@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     width: 100vw;
-    
+    gap: 20px;
 }
 
 .class-main {
@@ -40,10 +40,10 @@
     width: 700px;
     border-radius: 10px;
     border: 1px solid black;
-    min-height: 400px; 
+    min-height: 400px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
+    justify-content: space-between;
 }
 
 .livro-sinopse h5 {
@@ -57,11 +57,11 @@
     font-size: 16px;
     color: black;
     font-weight: normal;
+    margin-bottom: 20px;
 }
 
 .livro-sinopse button {
-    display: block;
-    margin: 20px auto;
+    align-self: center;
     padding: 10px 45px;
     background-color: #152D5D;
     color: white;
@@ -70,6 +70,7 @@
     border-radius: 40px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    margin-top: auto;
 }
 
 .livro-sinopse button:hover {
