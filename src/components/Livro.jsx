@@ -14,6 +14,7 @@ const Livro = () => {
   const { id } = useParams();
   const [livro, setLivro] = useState(null);
   const [error, setError] = useState(null);
+  const [mensagem, setMensagem] = useState(null);
 
   const fetchLivro = async () => {
     try {
@@ -29,6 +30,28 @@ const Livro = () => {
   useEffect(() => {
     fetchLivro();
   }, [id]);
+
+  const handleReserva = async () => {
+    const idUsuario = localStorage.getItem("idUsuario");
+
+    if (!idUsuario) {
+      setMensagem("Usuário não autenticado.");
+      return;
+    }
+
+    try {
+      await api.post("/reserva", {
+        idUsuario: idUsuario,
+        idLivro: livro.idLivro
+      });
+
+      setMensagem("Reserva realizada com sucesso!");
+    } catch (err) {
+      setMensagem(
+        err.response?.data?.message || err.message || "Erro ao reservar o livro."
+      );
+    }
+  };
 
   if (error) {
     return <p className="error">Erro: {error}</p>;
@@ -50,16 +73,21 @@ const Livro = () => {
               <ul>
                 <li>Autor: {livro.autor}</li>
                 <li>Publicado: {livro.anoPublicado}</li>
-                <li>Editora:{livro.editora}</li>
+                <li>Editora: {livro.editora}</li>
               </ul>
             </div>
+
             <div className="livro-sinopse">
               <div className="sinpose-content">
-              <h5>Sinopse</h5>
-              <p>{livro.sinopse}</p>
+                <h5>Sinopse</h5>
+                <p>{livro.sinopse}</p>
               </div>
-              <button>Reservar</button>
+
+              <button onClick={handleReserva}>Reservar</button>
+
+              {mensagem && <p className="mensagem">{mensagem}</p>}
             </div>
+
             <div className="aviso">
               <h5>Atenção!</h5>
               <p>
@@ -67,12 +95,14 @@ const Livro = () => {
                 dia. Este livro pertence à instituição, portanto, o discente
                 deve ter cuidado e devolvê-lo em perfeito estado. Após a
                 reserva, o aluno terá uma semana para ler e devolver o
-                livro. Em caso de atraso, será aplicada uma multa.<span>So é possivel reservar um exemplar!</span>
+                livro. Em caso de atraso, será aplicada uma multa.
+                <span>Só é possível reservar um exemplar!</span>
               </p>
             </div>
           </section>
         </main>
       </div>
+
       <Footer />
     </div>
   );
