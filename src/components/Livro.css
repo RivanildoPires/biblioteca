@@ -104,3 +104,41 @@
     font-size: 17px;
     text-transform: uppercase;
 }
+
+.error-message {
+  color: #d32f2f;
+  padding: 15px;
+  margin: 20px;
+  border: 1px solid #ef9a9a;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2em;
+}
+
+.mensagem {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.mensagem.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.mensagem.error {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ef9a9a;
+}
+
+.loading-button {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

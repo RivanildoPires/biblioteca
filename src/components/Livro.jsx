@@ -15,6 +15,7 @@ const Livro = () => {
   const [livro, setLivro] = useState(null);
   const [error, setError] = useState(null);
   const [mensagem, setMensagem] = useState(null);
+  const [carregando, setCarregando] = useState(false);
 
   const fetchLivro = async () => {
     try {
@@ -32,33 +33,58 @@ const Livro = () => {
   }, [id]);
 
   const handleReserva = async () => {
-    const idUsuario = localStorage.getItem("idUsuario");
-
-    if (!idUsuario) {
-      setMensagem("Usuário não autenticado.");
-      return;
-    }
-
+    setCarregando(true);
+    setMensagem(null);
+    
     try {
-      await api.post("/reserva", {
-        idUsuario: idUsuario,
-        idLivro: livro.idLivro
-      });
+      const usuarioId = localStorage.getItem("usuarioId");
 
-      setMensagem("Reserva realizada com sucesso!");
+      if (!usuarioId) {
+        throw new Error("Você precisa estar logado para reservar livros");
+      }
+
+      if (!livro?.idLivro) {
+        throw new Error("Livro não encontrado");
+      }
+
+  
+      const disponivel = await api.get(`/reserva/disponibilidade/${livro.idLivro}`);
+      if (!disponivel.data) {
+        throw new Error("Este livro não está disponível para reserva");
+      }
+
+
+      const reservaData = {
+        idUsuario: usuarioId,
+        idLivro: livro.idLivro
+      };
+
+      const response = await api.post("/reserva", reservaData);
+      
+      if (response.status === 201) {
+        setMensagem("Reserva realizada com sucesso!");
+      } else {
+        throw new Error("Não foi possível completar a reserva");
+      }
     } catch (err) {
+      console.error("Erro na reserva:", err);
       setMensagem(
-        err.response?.data?.message || err.message || "Erro ao reservar o livro."
+        err.response?.data?.message || 
+        err.response?.data || 
+        err.message || 
+        "Erro ao reservar o livro"
       );
+    } finally {
+      setCarregando(false);
     }
   };
 
   if (error) {
-    return <p className="error">Erro: {error}</p>;
+    return <div className="error-message">{error}</div>;
   }
 
   if (!livro) {
-    return <p className="loading">Carregando livro...</p>;
+    return <div className="loading">Carregando livro...</div>;
   }
 
   return (
@@ -69,7 +95,7 @@ const Livro = () => {
         <main>
           <section className="sec">
             <div className="livro-info">
-              <img src={java} alt="Livro" />
+              <img src={java} alt="Capa do livro" />
               <ul>
                 <li>Autor: {livro.autor}</li>
                 <li>Publicado: {livro.anoPublicado}</li>
@@ -78,14 +104,24 @@ const Livro = () => {
             </div>
 
             <div className="livro-sinopse">
-              <div className="sinpose-content">
+              <div className="sinopse-content">
                 <h5>Sinopse</h5>
                 <p>{livro.sinopse}</p>
               </div>
 
-              <button onClick={handleReserva}>Reservar</button>
+              <button 
+                onClick={handleReserva} 
+                disabled={carregando}
+                className={carregando ? "loading-button" : ""}
+              >
+                {carregando ? "Processando..." : "Reservar"}
+              </button>
 
-              {mensagem && <p className="mensagem">{mensagem}</p>}
+              {mensagem && (
+                <div className={`mensagem ${mensagem.includes("sucesso") ? "success" : "error"}`}>
+                  {mensagem}
+                </div>
+              )}
             </div>
 
             <div className="aviso">
@@ -96,7 +132,7 @@ const Livro = () => {
                 deve ter cuidado e devolvê-lo em perfeito estado. Após a
                 reserva, o aluno terá uma semana para ler e devolver o
                 livro. Em caso de atraso, será aplicada uma multa.
-                <span>Só é possível reservar um exemplar!</span>
+                <span>Só é possível reservar um exemplar por vez!</span>
               </p>
             </div>
           </section>

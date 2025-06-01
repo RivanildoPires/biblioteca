@@ -3,7 +3,6 @@ import "./MeuPerfil.css";
 import MacianoYasuo from "../assets/MacianoYasuo.jpg";
 import api from "../api";
 
-
 const MeuPerfil = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     nome: "",
@@ -16,7 +15,6 @@ const MeuPerfil = ({ isOpen, onClose }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-
   useEffect(() => {
     if (isOpen) {
       carregarDadosUsuario();
@@ -25,27 +23,31 @@ const MeuPerfil = ({ isOpen, onClose }) => {
 
   const carregarDadosUsuario = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
+      const usuarioId = localStorage.getItem("usuarioId");
+      if (!usuarioId) throw new Error("Usuário não autenticado");
 
-      if (userData) {
+      const localData = localStorage.getItem(`userData-${usuarioId}`);
+      if (localData) {
+        const userData = JSON.parse(localData);
         setFormData({
           nome: userData.nome || "",
           email: userData.email || "",
           telefone: userData.telefone || "",
           matricula: userData.matricula || "",
-          tipoUsuario: userData.tipo || userData.tipoUsuario || "",
+          tipoUsuario: userData.tipoUsuario || userData.tipo || "",
         });
       } else {
-        const usuarioId = localStorage.getItem("usuarioId");
-        if (!usuarioId) throw new Error("Usuário não autenticado");
-
         const response = await api.get(`/usuario/${usuarioId}`);
+        const userData = response.data;
+
+        localStorage.setItem(`userData-${usuarioId}`, JSON.stringify(userData));
+
         setFormData({
-          nome: response.data.nome,
-          email: response.data.email,
-          telefone: response.data.telefone,
-          matricula: response.data.matricula,
-          tipoUsuario: response.data.tipoUsuario,
+          nome: userData.nome,
+          email: userData.email,
+          telefone: userData.telefone,
+          matricula: userData.matricula,
+          tipoUsuario: userData.tipoUsuario,
         });
       }
     } catch (error) {
@@ -72,7 +74,9 @@ const MeuPerfil = ({ isOpen, onClose }) => {
       const usuarioId = localStorage.getItem("usuarioId");
       if (!usuarioId) throw new Error("Usuário não autenticado");
 
-      const userData = JSON.parse(localStorage.getItem("userData"));
+      const localData = localStorage.getItem(`userData-${usuarioId}`);
+      const userData = localData ? JSON.parse(localData) : null;
+
       if (
         userData &&
         userData.nome === formData.nome &&
@@ -83,19 +87,20 @@ const MeuPerfil = ({ isOpen, onClose }) => {
         return;
       }
 
-      const response = await api.put(`/usuario/${usuarioId}`, {
+      await api.put(`/usuario/${usuarioId}`, {
         nome: formData.nome,
         email: formData.email,
         telefone: formData.telefone,
       });
 
       const updatedUser = {
-        ...JSON.parse(localStorage.getItem("userData")),
+        ...userData,
         nome: formData.nome,
         email: formData.email,
         telefone: formData.telefone,
       };
-      localStorage.setItem("userData", JSON.stringify(updatedUser));
+
+      localStorage.setItem(`userData-${usuarioId}`, JSON.stringify(updatedUser));
 
       setSuccess("Perfil atualizado com sucesso!");
       setTimeout(() => onClose(), 2000);
@@ -147,7 +152,6 @@ const MeuPerfil = ({ isOpen, onClose }) => {
                 onChange={handleChange}
                 required
               />
-
               <input
                 id="telefone"
                 type="tel"
