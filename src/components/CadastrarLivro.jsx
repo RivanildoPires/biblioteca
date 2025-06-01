@@ -17,7 +17,7 @@ const areas = [
 const CadastrarLivro = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     titulo: "",
-    area: ""
+    area: "",
     autor: "",
     quantidade: "",
     sinopse: "",
