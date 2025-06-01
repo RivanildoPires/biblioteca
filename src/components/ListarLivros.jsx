@@ -10,6 +10,14 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
 });
 
+const areas = [
+  { label: "Ciências da Computação", value: "computacao" },
+  { label: "Direito", value: "direito" },
+  { label: "Educação Física", value: "edfisica" },
+  { label: "Marketing", value: "marketing" },
+  { label: "Matemática", value: "matematica" },
+];
+
 const LivroList = () => {
   const [livros, setLivros] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,12 +27,12 @@ const LivroList = () => {
   const fetchLivros = async () => {
     try {
       const response = await api.get("/livro");
-
       if (response.status === 204) {
         setError("Nenhum livro encontrado");
         setLivros([]);
       } else {
         setLivros(response.data);
+        setError(null);
       }
     } catch (err) {
       setError(
@@ -37,15 +45,14 @@ const LivroList = () => {
 
   useEffect(() => {
     fetchLivros();
-
     const intervalId = setInterval(fetchLivros, 200000);
-
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleAreaClick = (area) => {
-    setSelectedArea((prev) => (prev === area ? "" : area));
+  const handleAreaClick = (value) => {
+    setSelectedArea((prev) => (prev === value ? "" : value));
   };
+
 
   const filteredLivros = selectedArea
     ? livros.filter((livro) => livro.area === selectedArea)
@@ -79,13 +86,14 @@ const LivroList = () => {
             <div className="line"></div>
           </div>
           <ul>
-            {["Ciências da Computação", "Direito", "Educação Física", "Marketing", "Matemática"].map((area) => (
+            {areas.map(({ label, value }) => (
               <li
-                key={area}
-                onClick={() => handleAreaClick(area)}
-                className={selectedArea === area ? "selected" : ""}
+                key={value}
+                onClick={() => handleAreaClick(value)}
+                className={selectedArea === value ? "selected" : ""}
+                style={{ cursor: "pointer" }}
               >
-                {area}
+                {label}
               </li>
             ))}
           </ul>
@@ -94,7 +102,13 @@ const LivroList = () => {
         <div className="container-main">
           <main className="main-content">
             {filteredLivros.length === 0 ? (
-              <p>Nenhum livro encontrado para {selectedArea || "todas as áreas"}.</p>
+              <p>
+                Nenhum livro encontrado para{" "}
+                {selectedArea
+                  ? areas.find((a) => a.value === selectedArea)?.label
+                  : "todas as áreas"}
+                .
+              </p>
             ) : (
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
@@ -105,7 +119,12 @@ const LivroList = () => {
                         alt={`Capa do livro ${livro.titulo}`}
                       />
                       <h5>{livro.titulo}</h5>
-                      <p className="area">{livro.area}</p>
+                      <p className="area">
+                        {
+                          areas.find((a) => a.value === livro.area)?.label ||
+                          livro.area
+                        }
+                      </p>
                     </div>
                   </Link>
                 ))}

@@ -103,6 +103,34 @@
   animation: spin 1s linear infinite;
 }
 
+.area-selector ul {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.area-selector ul li {
+  padding: 5px 10px;
+  border: 1px solid #152d5d;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.area-selector ul li:hover {
+  background-color: #152d5d;
+  color: #fff;
+}
+
+.area-selector ul li.selected {
+  background-color: #152d5d;
+  color: white;
+  font-weight: bold;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./CadastrarLivro.css";
+import "./CadastrarUsuario.css";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
 });
 
+const areas = [
+  { label: "Ciências da Computação", value: "computacao" },
+  { label: "Direito", value: "direito" },
+  { label: "Educação Física", value: "edfisica" },
+  { label: "Marketing", value: "marketing" },
+  { label: "Matemática", value: "matematica" },
+];
+
 const CadastrarLivro = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     titulo: "",
-    area: "",
+    area: ""
     autor: "",
     quantidade: "",
     sinopse: "",
@@ -27,8 +35,20 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     }));
   };
 
+  const handleAreaSelect = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      area: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.area) {
+      setMessage("Por favor, selecione uma área.");
+      return;
+    }
 
     try {
       await api.post("/livro", {
@@ -67,6 +87,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
       <div className="modal-content">
         <h2>Cadastrar Livro</h2>
         <form onSubmit={handleSubmit}>
+
           <input
             type="text"
             name="titulo"
@@ -75,14 +96,23 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             onChange={handleChange}
             required
           />
-          <input
-            type="text"
-            name="area"
-            placeholder="Área"
-            value={formData.area}
-            onChange={handleChange}
-            required
-          />
+
+          <div className="area-selector">
+            <p>Selecione a Área:</p>
+            <ul>
+              {areas.map(({ label, value }) => (
+                <li
+                  key={value}
+                  className={formData.area === value ? "selected" : ""}
+                  onClick={() => handleAreaSelect(value)}
+                  style={{ cursor: "pointer", padding: "5px 10px" }}
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <input
             type="text"
             name="autor"
@@ -97,6 +127,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             placeholder="Quantidade"
             value={formData.quantidade}
             onChange={handleChange}
+            min="1"
             required
           />
           <textarea
@@ -120,6 +151,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             placeholder="Ano de Publicação"
             value={formData.anoPublicado}
             onChange={handleChange}
+            min="1990"
             required
           />
 
