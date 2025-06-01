@@ -14,7 +14,7 @@ const LivroList = () => {
   const [livros, setLivros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedArea, setSelectedArea] = useState(""); 
+  const [selectedArea, setSelectedArea] = useState("");
 
   const fetchLivros = async () => {
     try {
@@ -44,7 +44,7 @@ const LivroList = () => {
   }, []);
 
   const handleAreaClick = (area) => {
-    setSelectedArea(area);
+    setSelectedArea((prev) => (prev === area ? "" : area));
   };
 
   const filteredLivros = selectedArea
@@ -79,23 +79,22 @@ const LivroList = () => {
             <div className="line"></div>
           </div>
           <ul>
-            <li onClick={() => handleAreaClick("Ciências da Computação")}>
-              Ciências da Computação
-            </li>
-            <li onClick={() => handleAreaClick("Direito")}>Direito</li>
-            <li onClick={() => handleAreaClick("Educação Fisica")}>Educação Física</li>
-            <li onClick={() => handleAreaClick("Marketing")}>Marketing</li>
-            <li onClick={() => handleAreaClick("Matemática")}>Matemática</li>
-            <li onClick={() => handleAreaClick("")} style={{ color: "red" }}>
-              Mostrar Todos
-            </li>
+            {["Ciências da Computação", "Direito", "Educação Física", "Marketing", "Matemática"].map((area) => (
+              <li
+                key={area}
+                onClick={() => handleAreaClick(area)}
+                className={selectedArea === area ? "selected" : ""}
+              >
+                {area}
+              </li>
+            ))}
           </ul>
         </aside>
 
         <div className="container-main">
           <main className="main-content">
             {filteredLivros.length === 0 ? (
-              <p>Nenhum livro cadastrado nessa categoria.</p>
+              <p>Nenhum livro encontrado para {selectedArea || "todas as áreas"}.</p>
             ) : (
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
@@ -106,6 +105,7 @@ const LivroList = () => {
                         alt={`Capa do livro ${livro.titulo}`}
                       />
                       <h5>{livro.titulo}</h5>
+                      <p className="area">{livro.area}</p>
                     </div>
                   </Link>
                 ))}
