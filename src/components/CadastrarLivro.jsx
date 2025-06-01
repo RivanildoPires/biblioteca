@@ -35,13 +35,6 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleAreaSelect = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      area: value,
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -103,18 +96,21 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             />
 
             <div className="area-selector">
-              <p>Selecione a Área:</p>
-              <ul>
+              <label htmlFor="area">Selecione a Área:</label>
+              <select
+                name="area"
+                id="area"
+                value={formData.area}
+                onChange={handleChange}
+                required
+              >
+                <option value="">-- Selecione --</option>
                 {areas.map(({ label, value }) => (
-                  <li
-                    key={value}
-                    className={formData.area === value ? "selected" : ""}
-                    onClick={() => handleAreaSelect(value)}
-                  >
+                  <option key={value} value={value}>
                     {label}
-                  </li>
+                  </option>
                 ))}
-              </ul>
+              </select>
             </div>
 
             <input
@@ -142,7 +138,14 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
               value={formData.sinopse}
               onChange={handleChange}
               required
-              style={{ width: "400px", padding: "15px", marginBottom: "15px", border: "none", borderBottom: "1px solid #dbd9d9", backgroundColor: "#ffffff" }}
+              style={{
+                width: "400px",
+                padding: "15px",
+                marginBottom: "15px",
+                border: "none",
+                borderBottom: "1px solid #dbd9d9",
+                backgroundColor: "#ffffff",
+              }}
             />
 
             <input
@@ -169,7 +172,11 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             </div>
 
             <div className="send" style={{ marginTop: "10px" }}>
-              <button type="button" onClick={onClose} style={{ backgroundColor: "#6e6e6e" }}>
+              <button
+                type="button"
+                onClick={onClose}
+                style={{ backgroundColor: "#6e6e6e" }}
+              >
                 Cancelar
               </button>
             </div>

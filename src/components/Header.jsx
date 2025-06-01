@@ -3,20 +3,18 @@ import livro from "../assets/livro.png";
 import usuario from "../assets/usuario.png";
 import sair from "../assets/sair.png";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MeuPerfil from "./MeuPerfil";
 import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
 import CadastrarLivro from "./CadastrarLivro";
-import api from "../api";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [userData, setUserData] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("userData"));
@@ -33,22 +31,9 @@ const Header = () => {
     setModalType("");
   };
 
-
-  const handleSearch = async (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-
-    if (value.length >= 1) { 
-      try {
-        const response = await api.get(`/livros?titulo=${value}`);
-        setSearchResults(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar livros:", error);
-        setSearchResults([]);
-      }
-    } else {
-      setSearchResults([]);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("userData");
+    navigate("/");
   };
 
   return (
@@ -61,17 +46,8 @@ const Header = () => {
                 <img src={logo} alt="logo-biblioteca" />
               </Link>
 
-              {userData?.tipo === "BIBLIOTECARIO" ? (
-                <h3>Bem-vindo, {userData.nome}</h3>
-              ) : (
-                <form className="form">
-                  <input
-                    type="text"
-                    placeholder="Buscar..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                  />
-                </form>
+              {userData && (
+                <h3 className="bem-vindo">Bem-vindo, {userData.nome}</h3>
               )}
 
               <ul className="list">
@@ -140,9 +116,11 @@ const Header = () => {
                 </li>
 
                 <li>
-                  <a href="#">
+                  <button onClick={handleLogout} className="logout-button">
                     <img className="sair-img" src={sair} alt="sair" />
-                  </a>
+                    <br />
+                    Sair
+                  </button>
                 </li>
               </ul>
             </div>
@@ -163,18 +141,6 @@ const Header = () => {
                 </Link>
               </tr>
             </table>
-
-            {searchResults.length > 0 && (
-              <div className="search-results">
-                <ul>
-                  {searchResults.map((livro) => (
-                    <li key={livro.id}>
-                      <strong>{livro.titulo}</strong> - {livro.autor} ({livro.anoPublicado})
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </nav>
       </header>
