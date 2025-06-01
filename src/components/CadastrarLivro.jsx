@@ -96,7 +96,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             />
 
             <div className="area-selector">
-              <label htmlFor="area">Selecione a Área:</label>
+              <label htmlFor="area"></label>
               <select
                 name="area"
                 id="area"
@@ -104,7 +104,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
                 onChange={handleChange}
                 required
               >
-                <option value="">-- Selecione --</option>
+                <option value=""> Selecione </option>
                 {areas.map(({ label, value }) => (
                   <option key={value} value={value}>
                     {label}

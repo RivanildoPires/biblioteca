@@ -4,7 +4,7 @@ import java from "../assets/java.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
-import Footer from "./Footer";
+import Footer2 from "./Footer2";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
@@ -122,11 +122,9 @@ const LivroList = () => {
                         alt={`Capa do livro ${livro.titulo}`}
                       />
                       <h5>{livro.titulo}</h5>
-                      <p className="area">
                         {areas.find(
                           (a) => a.value === livro.area?.toLowerCase()
                         )?.label || livro.area}
-                      </p>
                     </div>
                   </Link>
                 ))}
@@ -136,7 +134,7 @@ const LivroList = () => {
         </div>
       </div>
 
-      <Footer />
+      <Footer2 />
     </div>
   );
 };

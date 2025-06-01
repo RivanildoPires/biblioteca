@@ -5,7 +5,8 @@ import ListarLivros from "./components/ListarLivros";
 import Livro from "./components/Livro";
 import ListarTCC from "./components/ListarTCC";
 import Material from "./components/Material";
-import TelaLogin from "./components/TelaLogin"
+import TelaLogin from "./components/TelaLogin";
+import LivrosReservados from "./components/LivrosReservados";
 function App() {
   return (
     <Router>
@@ -15,7 +16,8 @@ function App() {
         <Route path="/livro/:id" element={<Livro />} />
         <Route path="/tcc" element={<ListarTCC />} />
         <Route path="/material" element={<Material />} />
-        <Route path="/" element={<TelaLogin />}/>
+        <Route path="/" element={<TelaLogin />} />
+         <Route path="/livroReserva" element={<LivrosReservados />} />
       </Routes>
     </Router>
   );

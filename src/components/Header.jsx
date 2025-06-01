@@ -130,7 +130,7 @@ const Header = () => {
                 <Link to={"/livros"}>
                   <th>Livros</th>
                 </Link>
-                <th>Artigos</th>
+                <th>Livros Públicos</th>
                 <Link to={"/tcc"}>
                   <th>TCC</th>
                 </Link>
