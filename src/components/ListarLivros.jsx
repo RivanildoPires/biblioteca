@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./ListarLivros.css";
-import logo from "../assets/logo.png";
-import livro from "../assets/livro.png";
-import usuario from "../assets/usuario.png";
-import sair from "../assets/sair.png";
 import java from "../assets/java.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -18,6 +14,7 @@ const LivroList = () => {
   const [livros, setLivros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(""); 
 
   const fetchLivros = async () => {
     try {
@@ -46,6 +43,14 @@ const LivroList = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const handleAreaClick = (area) => {
+    setSelectedArea(area);
+  };
+
+  const filteredLivros = selectedArea
+    ? livros.filter((livro) => livro.area === selectedArea)
+    : livros;
+
   if (loading) {
     return (
       <div className="loading">
@@ -58,9 +63,7 @@ const LivroList = () => {
     return (
       <div className="error">
         <p>Erro: {error}</p>
-        <button onClick={() => window.location.reload()}>
-          Tentar novamente
-        </button>
+        <button onClick={() => window.location.reload()}>Tentar novamente</button>
       </div>
     );
   }
@@ -76,20 +79,26 @@ const LivroList = () => {
             <div className="line"></div>
           </div>
           <ul>
-            <li>Ciências da Computação</li>
-            <li>Direito</li>
-            <li>Educação Fisica</li>
-            <li>Marketing</li>
-            <li>Matemática</li>
+            <li onClick={() => handleAreaClick("Ciências da Computação")}>
+              Ciências da Computação
+            </li>
+            <li onClick={() => handleAreaClick("Direito")}>Direito</li>
+            <li onClick={() => handleAreaClick("Educação Fisica")}>Educação Física</li>
+            <li onClick={() => handleAreaClick("Marketing")}>Marketing</li>
+            <li onClick={() => handleAreaClick("Matemática")}>Matemática</li>
+            <li onClick={() => handleAreaClick("")} style={{ color: "red" }}>
+              Mostrar Todos
+            </li>
           </ul>
         </aside>
+
         <div className="container-main">
           <main className="main-content">
-            {livros.length === 0 ? (
-              <p>Nenhum livro cadastrado.</p>
+            {filteredLivros.length === 0 ? (
+              <p>Nenhum livro cadastrado nessa categoria.</p>
             ) : (
               <section className="section-livros">
-                {livros.map((livro) => (
+                {filteredLivros.map((livro) => (
                   <Link key={livro.idLivro} to={`/livro/${livro.idLivro}`}>
                     <div className="livro">
                       <img
@@ -105,6 +114,7 @@ const LivroList = () => {
           </main>
         </div>
       </div>
+
       <Footer />
     </div>
   );

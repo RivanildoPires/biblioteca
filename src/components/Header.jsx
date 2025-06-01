@@ -8,11 +8,15 @@ import { useState, useEffect } from "react";
 import MeuPerfil from "./MeuPerfil";
 import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
+import CadastrarLivro from "./CadastrarLivro";
+import api from "../api";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [userData, setUserData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("userData"));
@@ -29,6 +33,24 @@ const Header = () => {
     setModalType("");
   };
 
+
+  const handleSearch = async (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.length >= 1) { 
+      try {
+        const response = await api.get(`/livros?titulo=${value}`);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar livros:", error);
+        setSearchResults([]);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
   return (
     <div>
       <header>
@@ -43,20 +65,48 @@ const Header = () => {
                 <h3>Bem-vindo, {userData.nome}</h3>
               ) : (
                 <form className="form">
-                  <input type="text" placeholder="Buscar..." />
+                  <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                  />
                 </form>
               )}
 
               <ul className="list">
                 {userData?.tipo === "BIBLIOTECARIO" && (
                   <li>
-                    <img className="livro-img" src={cadastroU} alt="cadastroU" />
+                    <img
+                      className="livro-img"
+                      src={cadastroU}
+                      alt="cadastroU"
+                    />
                     <button onClick={() => openModalHandler("cadastrar")}>
                       Cadastrar <br />
                       Usuário
                     </button>
                     {modalType === "cadastrar" && (
-                      <CadastrarUsuario isOpen={openModal} onClose={closeModalHandler} />
+                      <CadastrarUsuario
+                        isOpen={openModal}
+                        onClose={closeModalHandler}
+                      />
+                    )}
+                  </li>
+                )}
+
+                {userData?.tipo === "BIBLIOTECARIO" && (
+                  <li>
+                    <img className="livro-img" src={livro} alt="addlivro" />
+                    <button onClick={() => openModalHandler("livro")}>
+                      Adicionar <br />
+                      Livro
+                    </button>
+                    {modalType === "livro" && (
+                      <CadastrarLivro
+                        isOpen={openModal}
+                        onClose={closeModalHandler}
+                      />
                     )}
                   </li>
                 )}
@@ -68,7 +118,10 @@ const Header = () => {
                     Reservado
                   </button>
                   {modalType === "livros" && (
-                    <MeuPerfil isOpen={openModal} onClose={closeModalHandler} />
+                    <MeuPerfil
+                      isOpen={openModal}
+                      onClose={closeModalHandler}
+                    />
                   )}
                 </li>
 
@@ -79,7 +132,10 @@ const Header = () => {
                     Perfil
                   </button>
                   {modalType === "perfil" && (
-                    <MeuPerfil isOpen={openModal} onClose={closeModalHandler} />
+                    <MeuPerfil
+                      isOpen={openModal}
+                      onClose={closeModalHandler}
+                    />
                   )}
                 </li>
 
@@ -107,6 +163,18 @@ const Header = () => {
                 </Link>
               </tr>
             </table>
+
+            {searchResults.length > 0 && (
+              <div className="search-results">
+                <ul>
+                  {searchResults.map((livro) => (
+                    <li key={livro.id}>
+                      <strong>{livro.titulo}</strong> - {livro.autor} ({livro.anoPublicado})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </nav>
       </header>
