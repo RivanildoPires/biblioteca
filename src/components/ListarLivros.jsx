@@ -53,9 +53,10 @@ const LivroList = () => {
     setSelectedArea((prev) => (prev === value ? "" : value));
   };
 
-
   const filteredLivros = selectedArea
-    ? livros.filter((livro) => livro.area === selectedArea)
+    ? livros.filter(
+        (livro) => livro.area?.toLowerCase() === selectedArea
+      )
     : livros;
 
   if (loading) {
@@ -70,7 +71,9 @@ const LivroList = () => {
     return (
       <div className="error">
         <p>Erro: {error}</p>
-        <button onClick={() => window.location.reload()}>Tentar novamente</button>
+        <button onClick={() => window.location.reload()}>
+          Tentar novamente
+        </button>
       </div>
     );
   }
@@ -120,10 +123,9 @@ const LivroList = () => {
                       />
                       <h5>{livro.titulo}</h5>
                       <p className="area">
-                        {
-                          areas.find((a) => a.value === livro.area)?.label ||
-                          livro.area
-                        }
+                        {areas.find(
+                          (a) => a.value === livro.area?.toLowerCase()
+                        )?.label || livro.area}
                       </p>
                     </div>
                   </Link>
