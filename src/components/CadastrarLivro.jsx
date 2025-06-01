@@ -22,7 +22,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     quantidade: "",
     sinopse: "",
     editora: "",
-    anoPublicado: ""
+    anoPublicado: "",
   });
 
   const [message, setMessage] = useState("");
@@ -31,14 +31,14 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleAreaSelect = (value) => {
     setFormData((prev) => ({
       ...prev,
-      area: value
+      area: value,
     }));
   };
 
@@ -54,7 +54,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
       await api.post("/livro", {
         ...formData,
         quantidade: Number(formData.quantidade),
-        anoPublicado: Number(formData.anoPublicado)
+        anoPublicado: Number(formData.anoPublicado),
       });
 
       setMessage("Livro cadastrado com sucesso!");
@@ -65,7 +65,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
         quantidade: "",
         sinopse: "",
         editora: "",
-        anoPublicado: ""
+        anoPublicado: "",
       });
 
       setTimeout(() => {
@@ -75,7 +75,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     } catch (error) {
       setMessage(
         error.response?.data?.message ||
-        "Erro ao cadastrar livro. Tente novamente."
+          "Erro ao cadastrar livro. Tente novamente."
       );
     }
   };
@@ -83,85 +83,108 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <h2>Cadastrar Livro</h2>
-        <form onSubmit={handleSubmit}>
+    <div className="container-modal">
+      <div className="conteudo">
+        <div className="btn-close">
+          <button onClick={onClose}>&times;</button>
+        </div>
 
-          <input
-            type="text"
-            name="titulo"
-            placeholder="Título"
-            value={formData.titulo}
-            onChange={handleChange}
-            required
-          />
+        <div className="text">Cadastrar Livro</div>
 
-          <div className="area-selector">
-            <p>Selecione a Área:</p>
-            <ul>
-              {areas.map(({ label, value }) => (
-                <li
-                  key={value}
-                  className={formData.area === value ? "selected" : ""}
-                  onClick={() => handleAreaSelect(value)}
-                  style={{ cursor: "pointer", padding: "5px 10px" }}
-                >
-                  {label}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="form-container">
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="titulo"
+              placeholder="Título"
+              value={formData.titulo}
+              onChange={handleChange}
+              required
+            />
 
-          <input
-            type="text"
-            name="autor"
-            placeholder="Autor"
-            value={formData.autor}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="number"
-            name="quantidade"
-            placeholder="Quantidade"
-            value={formData.quantidade}
-            onChange={handleChange}
-            min="1"
-            required
-          />
-          <textarea
-            name="sinopse"
-            placeholder="Sinopse"
-            value={formData.sinopse}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="editora"
-            placeholder="Editora"
-            value={formData.editora}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="number"
-            name="anoPublicado"
-            placeholder="Ano de Publicação"
-            value={formData.anoPublicado}
-            onChange={handleChange}
-            min="1990"
-            required
-          />
+            <div className="area-selector">
+              <p>Selecione a Área:</p>
+              <ul>
+                {areas.map(({ label, value }) => (
+                  <li
+                    key={value}
+                    className={formData.area === value ? "selected" : ""}
+                    onClick={() => handleAreaSelect(value)}
+                  >
+                    {label}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <button type="submit">Cadastrar</button>
-          <button type="button" onClick={onClose}>
-            Cancelar
-          </button>
-        </form>
+            <input
+              type="text"
+              name="autor"
+              placeholder="Autor"
+              value={formData.autor}
+              onChange={handleChange}
+              required
+            />
 
-        {message && <p className="message">{message}</p>}
+            <input
+              type="number"
+              name="quantidade"
+              placeholder="Quantidade"
+              value={formData.quantidade}
+              onChange={handleChange}
+              min="1"
+              required
+            />
+
+            <textarea
+              name="sinopse"
+              placeholder="Sinopse"
+              value={formData.sinopse}
+              onChange={handleChange}
+              required
+              style={{ width: "400px", padding: "15px", marginBottom: "15px", border: "none", borderBottom: "1px solid #dbd9d9", backgroundColor: "#ffffff" }}
+            />
+
+            <input
+              type="text"
+              name="editora"
+              placeholder="Editora"
+              value={formData.editora}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="number"
+              name="anoPublicado"
+              placeholder="Ano de Publicação"
+              value={formData.anoPublicado}
+              onChange={handleChange}
+              min="1990"
+              required
+            />
+
+            <div className="send">
+              <button type="submit">Cadastrar</button>
+            </div>
+
+            <div className="send" style={{ marginTop: "10px" }}>
+              <button type="button" onClick={onClose} style={{ backgroundColor: "#6e6e6e" }}>
+                Cancelar
+              </button>
+            </div>
+          </form>
+
+          {message && (
+            <div
+              className={`alert ${
+                message.includes("sucesso") ? "success" : "error"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
