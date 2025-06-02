@@ -23,7 +23,8 @@ const Livro = () => {
     try {
       const response = await api.get(`/livro/${id}`);
       setLivro(response.data);
-      setQuantidadeDisponivel(response.data.quantidade);
+
+      setQuantidadeDisponivel(response.data.quantidade || 0);
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Erro ao buscar o livro"
@@ -42,7 +43,9 @@ const Livro = () => {
 
   useEffect(() => {
     fetchLivro();
-    const usuarioId = localStorage.getItem("usuarioId");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const usuarioId = userData?.id;
+
     if (usuarioId) {
       fetchReservasUsuario(usuarioId);
     }
@@ -53,7 +56,8 @@ const Livro = () => {
     setMensagem(null);
 
     try {
-      const usuarioId = localStorage.getItem("usuarioId");
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const usuarioId = userData?.id;
 
       if (!usuarioId) {
         throw new Error("Você precisa estar logado para reservar livros");
@@ -99,7 +103,6 @@ const Livro = () => {
       console.error("Erro na reserva:", err);
       setMensagem(
         err.response?.data?.message ||
-        err.response?.data ||
         err.message ||
         "Erro ao reservar o livro"
       );
@@ -138,7 +141,7 @@ const Livro = () => {
                 <li>Autor: {livro.autor}</li>
                 <li>Publicado: {livro.anoPublicado}</li>
                 <li>Editora: {livro.editora}</li>
-                <li>Exemplares disponíveis: {quantidadeDisponivel}</li>
+                <li>Disponíveis: {quantidadeDisponivel}</li>
               </ul>
             </div>
 
