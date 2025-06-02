@@ -23,8 +23,15 @@ const Livro = () => {
     try {
       const response = await api.get(`/livro/${id}`);
       setLivro(response.data);
-      const disponibilidade = await api.get(`/livro/quantidade/${response.data.idLivro}`);
-      setQuantidadeDisponivel(disponibilidade.data.quantidade);
+
+      if (response.data.quantidadeDisponivel !== undefined) {
+        setQuantidadeDisponivel(response.data.quantidadeDisponivel);
+      } else if (response.data.quantidade !== undefined) {
+        setQuantidadeDisponivel(response.data.quantidade);
+      } else {
+        console.warn("Quantidade não encontrada na resposta do livro.");
+        setQuantidadeDisponivel(0);
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Erro ao buscar o livro"
@@ -66,12 +73,10 @@ const Livro = () => {
 
       const isLivro6 = livro.idLivro === "6";
 
-      // ✅ Regra: Não reservar se só resta 1 exemplar e não for o livro 6
       if (!isLivro6 && quantidadeDisponivel <= 1) {
         throw new Error("Não é possível reservar. Resta apenas 1 exemplar disponível.");
       }
 
-      // ✅ Regra: máximo de 5 reservas por livro
       const reservasDoMesmoLivro = reservasUsuario.filter(
         (r) => r.livro.idLivro === livro.idLivro && r.statusReserva !== "DEVOLVIDO"
       );
@@ -80,7 +85,6 @@ const Livro = () => {
         throw new Error("Limite de reservas para este livro atingido (máximo 5)");
       }
 
-      // ✅ Regra: máximo de 3 reservas ativas por usuário
       if (reservasUsuario.length >= 3) {
         throw new Error("Você já atingiu o limite de 3 reservas ativas");
       }
