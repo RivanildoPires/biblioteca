@@ -8,19 +8,26 @@ const api = axios.create({
 
 const LivrosReservadosModal = ({ isOpen, onClose }) => {
   const [reservas, setReservas] = useState([]);
-  const [carregando, setCarregando] = useState(true);
+  const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const fetchReservas = async () => {
+      setCarregando(true);
+      setErro(null);
+
       try {
-        const usuarioId = localStorage.getItem("usuarioId");
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        const usuarioId = userData?.id;
+
         if (!usuarioId) {
           throw new Error("Usuário não autenticado");
         }
-        const response = await api.get(`/reserva/usuario/${usuarioId}`);
+
+        const response = await api.get(`/reserva/${usuarioId}`);
+
         setReservas(response.data);
       } catch (err) {
         setErro(
@@ -39,7 +46,9 @@ const LivrosReservadosModal = ({ isOpen, onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>X</button>
+        <button className="close-button" onClick={onClose}>
+          X
+        </button>
         <h2>Livros Reservados</h2>
 
         {carregando && <div className="loading">Carregando reservas...</div>}
@@ -53,42 +62,46 @@ const LivrosReservadosModal = ({ isOpen, onClose }) => {
               reservas.map((reserva) => (
                 <div key={reserva.idReserva} className="reserva-board">
                   <ul>
-                    <li><strong>Título:</strong> {reserva.livro.titulo}</li>
-                    <li><strong>Autor:</strong> {reserva.livro.autor}</li>
-                    <li><strong>Ano:</strong> {reserva.livro.anoPublicado}</li>
-                    <li><strong>Área:</strong> {reserva.livro.area}</li>
+                    <li>
+                      <strong>Título:</strong> {reserva.livro?.titulo || "N/A"}
+                    </li>
+                    <li>
+                      <strong>Autor:</strong> {reserva.livro?.autor || "N/A"}
+                    </li>
+                    <li>
+                      <strong>Ano:</strong> {reserva.livro?.anoPublicado || "N/A"}
+                    </li>
+                    <li>
+                      <strong>Área:</strong> {reserva.livro?.area || "N/A"}
+                    </li>
                   </ul>
 
                   <div className="status-reserva">
                     <h6>Status de Reserva</h6>
-                    <h3 data-status={reserva.status}>
-                      {reserva.status}
-                    </h3>
+                    <h3 data-status={reserva.status}>{reserva.status}</h3>
 
                     {reserva.status === "RESERVADO" && (
                       <>
                         <p>Prazo para retirada:</p>
-                        <p>{reserva.diasRestantes} dias úteis</p>
+                        <p>{reserva.diasRestantes || "-" } dias úteis</p>
                       </>
                     )}
 
                     {reserva.status === "OK" && (
                       <>
                         <p>Prazo para devolução:</p>
-                        <p>{reserva.diasRestantes} dias úteis</p>
+                        <p>{reserva.diasRestantes || "-"} dias úteis</p>
                       </>
                     )}
 
                     {reserva.status === "ATRASADO" && (
                       <>
                         <p>Dias em atraso:</p>
-                        <p>{reserva.diasEmAtraso} dias</p>
+                        <p>{reserva.diasEmAtraso || "-" } dias</p>
                       </>
                     )}
 
-                    {reserva.status === "DEVOLVIDO" && (
-                      <p>Livro devolvido.</p>
-                    )}
+                    {reserva.status === "DEVOLVIDO" && <p>Livro devolvido.</p>}
                   </div>
                 </div>
               ))
