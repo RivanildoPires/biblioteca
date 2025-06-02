@@ -16,11 +16,15 @@ const Livro = () => {
   const [error, setError] = useState(null);
   const [mensagem, setMensagem] = useState(null);
   const [carregando, setCarregando] = useState(false);
+  const [reservasUsuario, setReservasUsuario] = useState([]);
+  const [quantidadeDisponivel, setQuantidadeDisponivel] = useState(0);
 
   const fetchLivro = async () => {
     try {
       const response = await api.get(`/livro/${id}`);
       setLivro(response.data);
+      const disponibilidade = await api.get(`/livro/quantidade/${response.data.idLivro}`);
+      setQuantidadeDisponivel(disponibilidade.data.quantidade);
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Erro ao buscar o livro"
@@ -28,8 +32,21 @@ const Livro = () => {
     }
   };
 
+  const fetchReservasUsuario = async (usuarioId) => {
+    try {
+      const response = await api.get(`/reserva/${usuarioId}`);
+      setReservasUsuario(response.data);
+    } catch (err) {
+      console.error("Erro ao buscar reservas do usuário:", err);
+    }
+  };
+
   useEffect(() => {
     fetchLivro();
+    const usuarioId = localStorage.getItem("usuarioId");
+    if (usuarioId) {
+      fetchReservasUsuario(usuarioId);
+    }
   }, [id]);
 
   const handleReserva = async () => {
@@ -47,9 +64,21 @@ const Livro = () => {
         throw new Error("Livro não encontrado");
       }
 
-      const disponivel = await api.get(`/reserva/disponibilidade/${livro.idLivro}`);
-      if (!disponivel.data) {
-        throw new Error("Este livro não está disponível para reserva");
+      const isLivro6 = livro.idLivro === "6";
+
+      if (!isLivro6 && quantidadeDisponivel <= 1) {
+        throw new Error("Não é possível reservar. Resta apenas 1 exemplar disponível.");
+      }
+
+      if (!isLivro6) {
+        const reservasLivro = await api.get(`/reserva/livro/${livro.idLivro}`);
+        if (reservasLivro.data.length >= 5) {
+          throw new Error("Limite de reservas para este livro atingido (máximo 5)");
+        }
+      }
+
+      if (reservasUsuario.length >= 3) {
+        throw new Error("Você já atingiu o limite de 3 reservas ativas");
       }
 
       const reservaData = {
@@ -61,6 +90,8 @@ const Livro = () => {
       
       if (response.status === 201) {
         setMensagem("Reserva realizada com sucesso!");
+        fetchLivro();
+        fetchReservasUsuario(usuarioId);
       } else {
         throw new Error("Não foi possível completar a reserva");
       }
@@ -107,6 +138,7 @@ const Livro = () => {
                 <li>Autor: {livro.autor}</li>
                 <li>Publicado: {livro.anoPublicado}</li>
                 <li>Editora: {livro.editora}</li>
+                <li>Exemplares disponíveis: {quantidadeDisponivel}</li>
               </ul>
             </div>
 
@@ -118,7 +150,7 @@ const Livro = () => {
 
               <button 
                 onClick={handleReserva} 
-                disabled={carregando}
+                disabled={carregando || (quantidadeDisponivel <= 1 && livro.idLivro !== "6")}
                 className={carregando ? "loading-button" : ""}
               >
                 {carregando ? "Processando..." : "Reservar"}
@@ -132,6 +164,12 @@ const Livro = () => {
                   {mensagem.includes("sucesso") ? "✅" : "❌"} {mensagem}
                 </div>
               )}
+
+              {reservasUsuario.length > 0 && (
+                <div className="reservas-info">
+                  <p>Você tem {reservasUsuario.length} livro(s) reservado(s) de um máximo de 3.</p>
+                </div>
+              )}
             </div>
 
             <div className="aviso">
@@ -142,7 +180,7 @@ const Livro = () => {
                 deve ter cuidado e devolvê-lo em perfeito estado. Após a
                 reserva, o aluno terá uma semana para ler e devolver o
                 livro. Em caso de atraso, será aplicada uma multa.
-                <span>Só é possível reservar um exemplar por vez!</span>
+                <span>Limite de 3 reservas por usuário!</span>
               </p>
             </div>
           </section>
