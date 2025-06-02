@@ -47,12 +47,10 @@ const Livro = () => {
         throw new Error("Livro não encontrado");
       }
 
-  
       const disponivel = await api.get(`/reserva/disponibilidade/${livro.idLivro}`);
       if (!disponivel.data) {
         throw new Error("Este livro não está disponível para reserva");
       }
-
 
       const reservaData = {
         idUsuario: usuarioId,
@@ -78,6 +76,15 @@ const Livro = () => {
       setCarregando(false);
     }
   };
+
+  useEffect(() => {
+    if (mensagem) {
+      const timer = setTimeout(() => {
+        setMensagem(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensagem]);
 
   if (error) {
     return <div className="error-message">{error}</div>;
@@ -118,8 +125,11 @@ const Livro = () => {
               </button>
 
               {mensagem && (
-                <div className={`mensagem ${mensagem.includes("sucesso") ? "success" : "error"}`}>
-                  {mensagem}
+                <div 
+                  className={`mensagem ${mensagem.includes("sucesso") ? "success" : "error"}`}
+                  role="alert"
+                >
+                  {mensagem.includes("sucesso") ? "✅" : "❌"} {mensagem}
                 </div>
               )}
             </div>

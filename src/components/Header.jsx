@@ -9,6 +9,7 @@ import MeuPerfil from "./MeuPerfil";
 import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
 import CadastrarLivro from "./CadastrarLivro";
+import LivrosReservadosModal from "./LivrosReservadosModal";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -91,10 +92,10 @@ const Header = () => {
                   <img className="livro-img" src={livro} alt="livrinho" />
                   <button onClick={() => openModalHandler("livros")}>
                     Livros <br />
-                    Reservado
+                    Reservados
                   </button>
                   {modalType === "livros" && (
-                    <MeuPerfil
+                    <LivrosReservadosModal
                       isOpen={openModal}
                       onClose={closeModalHandler}
                     />
@@ -108,10 +109,7 @@ const Header = () => {
                     Perfil
                   </button>
                   {modalType === "perfil" && (
-                    <MeuPerfil
-                      isOpen={openModal}
-                      onClose={closeModalHandler}
-                    />
+                    <MeuPerfil isOpen={openModal} onClose={closeModalHandler} />
                   )}
                 </li>
 

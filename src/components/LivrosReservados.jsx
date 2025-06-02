@@ -1,59 +1,103 @@
+import React, { useEffect, useState } from "react";
 import "./LivrosReservados.css";
+import axios from "axios";
 
-const LivrosReservados = () => {
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+});
+
+const LivrosReservadosModal = ({ isOpen, onClose }) => {
+  const [reservas, setReservas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchReservas = async () => {
+      try {
+        const usuarioId = localStorage.getItem("usuarioId");
+        if (!usuarioId) {
+          throw new Error("Usuário não autenticado");
+        }
+        const response = await api.get(`/reserva/usuario/${usuarioId}`);
+        setReservas(response.data);
+      } catch (err) {
+        setErro(
+          err.response?.data?.message || err.message || "Erro ao carregar reservas"
+        );
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    fetchReservas();
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
   return (
-    <div className="container-reserva">
-      <h2>Status de Reserva</h2>
-      
-      <div className="reserva-board">
-        <ul>
-          <li>Título: Design Pattern com Java</li>
-          <li>Autor: Casa do Código - Alura</li>
-          <li>Ano: 2001</li>
-          <li>Área: Programação em Java</li>
-        </ul>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <button className="close-button" onClick={onClose}>X</button>
+        <h2>Livros Reservados</h2>
 
-        <div className="status-reserva">
-          <h6>Status de Reserva</h6>
-          <h3 data-status="RESERVADO">(RESERVADO)</h3>
-          <p>Prazo para retirada:</p>
-          <p>2 Dias úteis</p>
-        </div>
-      </div>
+        {carregando && <div className="loading">Carregando reservas...</div>}
+        {erro && <div className="error-message">{erro}</div>}
 
-      <div className="reserva-board">
-        <ul>
-          <li>Título: Clean Code</li>
-          <li>Autor: Robert Cecil Martin</li>
-          <li>Ano: Edição padrão, 8 setembro 2009</li>
-          <li>Área: Habilidades Práticas do Agile Software</li>
-        </ul>
+        {!carregando && !erro && (
+          <>
+            {reservas.length === 0 ? (
+              <p>Você não possui livros reservados.</p>
+            ) : (
+              reservas.map((reserva) => (
+                <div key={reserva.idReserva} className="reserva-board">
+                  <ul>
+                    <li><strong>Título:</strong> {reserva.livro.titulo}</li>
+                    <li><strong>Autor:</strong> {reserva.livro.autor}</li>
+                    <li><strong>Ano:</strong> {reserva.livro.anoPublicado}</li>
+                    <li><strong>Área:</strong> {reserva.livro.area}</li>
+                  </ul>
 
-        <div className="status-reserva">
-          <h6>Status de Reserva</h6>
-          <h3 data-status="OK">OK</h3>
-          <p>Prazo para devolução:</p>
-          <p>7 Dias úteis</p>
-        </div>
-      </div>
+                  <div className="status-reserva">
+                    <h6>Status de Reserva</h6>
+                    <h3 data-status={reserva.status}>
+                      {reserva.status}
+                    </h3>
 
-      <div className="reserva-board">
-        <ul>
-          <li>Título: Clean Code</li>
-          <li>Autor: Robert Cecil Martin</li>
-          <li>Ano: Edição padrão, 8 setembro 2009</li>
-          <li>Área: Habilidades Práticas do Agile Software</li>
-        </ul>
+                    {reserva.status === "RESERVADO" && (
+                      <>
+                        <p>Prazo para retirada:</p>
+                        <p>{reserva.diasRestantes} dias úteis</p>
+                      </>
+                    )}
 
-        <div className="status-reserva">
-          <h6>Status de Reserva</h6>
-          <h3 data-status="Em Atraso">Em Atraso</h3>
-          <p>Dias em atraso:</p>
-          <p>2 dias</p>
-        </div>
+                    {reserva.status === "OK" && (
+                      <>
+                        <p>Prazo para devolução:</p>
+                        <p>{reserva.diasRestantes} dias úteis</p>
+                      </>
+                    )}
+
+                    {reserva.status === "ATRASADO" && (
+                      <>
+                        <p>Dias em atraso:</p>
+                        <p>{reserva.diasEmAtraso} dias</p>
+                      </>
+                    )}
+
+                    {reserva.status === "DEVOLVIDO" && (
+                      <p>Livro devolvido.</p>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-export default LivrosReservados;
+export default LivrosReservadosModal;
