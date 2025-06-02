@@ -1,230 +1,111 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { supabase } from "../supabaseClient";
-import "./CadastrarUsuario.css";
+import React, { useState } from 'react';
+import { supabase } from '../supabaseClient'
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001',
 });
 
-const areas = [
-  { label: "Ciências da Computação", value: "computacao" },
-  { label: "Direito", value: "direito" },
-  { label: "Educação Física", value: "edfisica" },
-  { label: "Marketing", value: "marketing" },
-  { label: "Matemática", value: "matematica" },
-];
-
-const CadastrarLivro = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    titulo: "",
-    area: "",
-    autor: "",
-    quantidade: "",
-    sinopse: "",
-    editora: "",
-    anoPublicado: "",
-  });
-
-  const [imagem, setImagem] = useState(null);
-  const [message, setMessage] = useState("");
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    setImagem(e.target.files[0]);
-  };
-
-  const uploadImagem = async () => {
-    if (!imagem) return null;
-
-    const fileExt = imagem.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `livros/${fileName}`;
-
-    const { error } = await supabase.storage
-      .from('livros')
-      .upload(filePath, imagem);
-
-    if (error) {
-      throw new Error('Erro ao enviar imagem: ' + error.message);
-    }
-
-    const { data } = supabase.storage
-      .from('livros')
-      .getPublicUrl(filePath);
-
-    return data.publicUrl;
-  };
+const CadastrarLivro = () => {
+  const [titulo, setTitulo] = useState('');
+  const [autor, setAutor] = useState('');
+  const [area, setArea] = useState('');
+  const [editora, setEditora] = useState('');
+  const [anoPublicado, setAnoPublicado] = useState('');
+  const [imagemFile, setImagemFile] = useState(null);
+  const [mensagem, setMensagem] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.area) {
-      setMessage("Por favor, selecione uma área.");
-      return;
-    }
+    let imagemPath = null;
 
-    try {
-      let imagemUrl = null;
+    if (imagemFile) {
+      const fileName = `${Date.now()}_${imagemFile.name}`;
+      const { data, error } = await supabase.storage
+        .from('livros')
+        .upload(fileName, imagemFile);
 
-      if (imagem) {
-        imagemUrl = await uploadImagem();
+      if (error) {
+        console.error('Erro ao fazer upload da imagem:', error.message);
+        setMensagem('Erro ao enviar imagem');
+        return;
       }
 
-      await api.post("/livro", {
-        ...formData,
-        quantidade: Number(formData.quantidade),
-        anoPublicado: Number(formData.anoPublicado),
-        imagemUrl,
-      });
+      imagemPath = `livros/${fileName}`;
+    }
 
-      setMessage("Livro cadastrado com sucesso!");
-      setFormData({
-        titulo: "",
-        area: "",
-        autor: "",
-        quantidade: "",
-        sinopse: "",
-        editora: "",
-        anoPublicado: "",
-      });
-      setImagem(null);
+    const novoLivro = {
+      titulo,
+      autor,
+      area,
+      editora,
+      anoPublicado: parseInt(anoPublicado, 10),
+      imagem: imagemPath,
+    };
 
-      setTimeout(() => {
-        setMessage("");
-        onClose();
-      }, 1500);
-    } catch (error) {
-      setMessage(
-        error.response?.data?.message ||
-          "Erro ao cadastrar livro. Tente novamente."
-      );
+    try {
+      await api.post('/livro', novoLivro);
+      setMensagem('Livro cadastrado com sucesso!');
+      setTitulo('');
+      setAutor('');
+      setArea('');
+      setEditora('');
+      setAnoPublicado('');
+      setImagemFile(null);
+    } catch (err) {
+      console.error('Erro ao cadastrar livro:', err);
+      setMensagem('Erro ao cadastrar livro');
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="container-modal">
-      <div className="conteudo">
-        <div className="btn-close">
-          <button onClick={onClose}>&times;</button>
-        </div>
-
-        <div className="text">Cadastrar Livro</div>
-
-        <div className="form-container">
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="titulo"
-              placeholder="Título"
-              value={formData.titulo}
-              onChange={handleChange}
-              required
-            />
-
-            <div className="area-selector">
-              <select
-                name="area"
-                value={formData.area}
-                onChange={handleChange}
-                required
-              >
-                <option value=""> Selecione </option>
-                {areas.map(({ label, value }) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <input
-              type="text"
-              name="autor"
-              placeholder="Autor"
-              value={formData.autor}
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              type="number"
-              name="quantidade"
-              placeholder="Quantidade"
-              value={formData.quantidade}
-              onChange={handleChange}
-              min="1"
-              required
-            />
-
-            <textarea
-              name="sinopse"
-              placeholder="Sinopse"
-              value={formData.sinopse}
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              type="text"
-              name="editora"
-              placeholder="Editora"
-              value={formData.editora}
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              type="number"
-              name="anoPublicado"
-              placeholder="Ano de Publicação"
-              value={formData.anoPublicado}
-              onChange={handleChange}
-              min="1990"
-              required
-            />
-
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-
-            <div className="send">
-              <button type="submit">Cadastrar</button>
-            </div>
-
-            <div className="send" style={{ marginTop: "10px" }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{ backgroundColor: "#6e6e6e" }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
-
-          {message && (
-            <div
-              className={`alert ${
-                message.includes("sucesso") ? "success" : "error"
-              }`}
-            >
-              {message}
-            </div>
-          )}
-        </div>
-      </div>
+    <div>
+      <h2>Cadastrar Livro</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Título"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Autor"
+          value={autor}
+          onChange={(e) => setAutor(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Área"
+          value={area}
+          onChange={(e) => setArea(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Editora"
+          value={editora}
+          onChange={(e) => setEditora(e.target.value)}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Ano de Publicação"
+          value={anoPublicado}
+          onChange={(e) => setAnoPublicado(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImagemFile(e.target.files[0])}
+        />
+        <button type="submit">Cadastrar</button>
+      </form>
+      {mensagem && <p>{mensagem}</p>}
     </div>
   );
 };
