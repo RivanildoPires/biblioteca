@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { supabase } from "./supabaseClient";
 import "./CadastrarUsuario.css";
 
 const api = axios.create({
@@ -25,6 +26,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     anoPublicado: "",
   });
 
+  const [imagem, setImagem] = useState(null);
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
@@ -33,6 +35,32 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    setImagem(e.target.files[0]);
+  };
+
+  const uploadImagem = async () => {
+    if (!imagem) return null;
+
+    const fileExt = imagem.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `livros/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from('livros')
+      .upload(filePath, imagem);
+
+    if (error) {
+      throw new Error('Erro ao enviar imagem: ' + error.message);
+    }
+
+    const { data } = supabase.storage
+      .from('livros')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
   };
 
   const handleSubmit = async (e) => {
@@ -44,10 +72,17 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     }
 
     try {
+      let imagemUrl = null;
+
+      if (imagem) {
+        imagemUrl = await uploadImagem();
+      }
+
       await api.post("/livro", {
         ...formData,
         quantidade: Number(formData.quantidade),
         anoPublicado: Number(formData.anoPublicado),
+        imagemUrl,
       });
 
       setMessage("Livro cadastrado com sucesso!");
@@ -60,6 +95,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
         editora: "",
         anoPublicado: "",
       });
+      setImagem(null);
 
       setTimeout(() => {
         setMessage("");
@@ -96,10 +132,8 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             />
 
             <div className="area-selector">
-              <label htmlFor="area"></label>
               <select
                 name="area"
-                id="area"
                 value={formData.area}
                 onChange={handleChange}
                 required
@@ -138,14 +172,6 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
               value={formData.sinopse}
               onChange={handleChange}
               required
-              style={{
-                width: "400px",
-                padding: "15px",
-                marginBottom: "15px",
-                border: "none",
-                borderBottom: "1px solid #dbd9d9",
-                backgroundColor: "#ffffff",
-              }}
             />
 
             <input
@@ -165,6 +191,12 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
               onChange={handleChange}
               min="1990"
               required
+            />
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
             />
 
             <div className="send">

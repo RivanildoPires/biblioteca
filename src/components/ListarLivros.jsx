@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./ListarLivros.css";
-import java from "../assets/java.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
@@ -54,9 +53,7 @@ const LivroList = () => {
   };
 
   const filteredLivros = selectedArea
-    ? livros.filter(
-        (livro) => livro.area?.toLowerCase() === selectedArea
-      )
+    ? livros.filter((livro) => livro.area?.toLowerCase() === selectedArea)
     : livros;
 
   if (loading) {
@@ -118,7 +115,7 @@ const LivroList = () => {
                   <Link key={livro.idLivro} to={`/livro/${livro.idLivro}`}>
                     <div className="livro">
                       <img
-                        src={livro.imagem || java}
+                        src={livro.urlImagem}
                         alt={`Capa do livro ${livro.titulo}`}
                       />
                       <h5>{livro.titulo}</h5>

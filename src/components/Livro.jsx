@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./Livro.css";
-import java from "../assets/java.png";
 import Header from "./Header";
 import Footer from "./Footer";
 import axios from "axios";
@@ -70,15 +69,20 @@ const Livro = () => {
       const isLivro6 = livro.idLivro === "6";
 
       if (!isLivro6 && quantidadeDisponivel <= 1) {
-        throw new Error("Não é possível reservar. Resta apenas 1 exemplar disponível.");
+        throw new Error(
+          "Não é possível reservar. Resta apenas 1 exemplar disponível."
+        );
       }
 
       const reservasDoMesmoLivro = reservasUsuario.filter(
-        (r) => r.livro.idLivro === livro.idLivro && r.statusReserva !== "DEVOLVIDO"
+        (r) =>
+          r.livro.idLivro === livro.idLivro && r.statusReserva !== "DEVOLVIDO"
       );
 
       if (!isLivro6 && reservasDoMesmoLivro.length >= 5) {
-        throw new Error("Limite de reservas para este livro atingido (máximo 5)");
+        throw new Error(
+          "Limite de reservas para este livro atingido (máximo 5)"
+        );
       }
 
       if (reservasUsuario.length >= 3) {
@@ -87,7 +91,7 @@ const Livro = () => {
 
       const reservaData = {
         idUsuario: usuarioId,
-        idLivro: livro.idLivro
+        idLivro: livro.idLivro,
       };
 
       const response = await api.post("/reserva", reservaData);
@@ -102,9 +106,7 @@ const Livro = () => {
     } catch (err) {
       console.error("Erro na reserva:", err);
       setMensagem(
-        err.response?.data?.message ||
-        err.message ||
-        "Erro ao reservar o livro"
+        err.response?.data?.message || err.message || "Erro ao reservar o livro"
       );
     } finally {
       setCarregando(false);
@@ -136,7 +138,10 @@ const Livro = () => {
         <main>
           <section className="sec">
             <div className="livro-info">
-              <img src={java} alt="Capa do livro" />
+              <img
+                src={livro.urlImagem}
+                alt={`Capa do livro ${livro.titulo}`}
+              />
               <ul>
                 <li>Autor: {livro.autor}</li>
                 <li>Publicado: {livro.anoPublicado}</li>
@@ -153,7 +158,10 @@ const Livro = () => {
 
               <button
                 onClick={handleReserva}
-                disabled={carregando || (quantidadeDisponivel <= 1 && livro.idLivro !== "6")}
+                disabled={
+                  carregando ||
+                  (quantidadeDisponivel <= 1 && livro.idLivro !== "6")
+                }
                 className={carregando ? "loading-button" : ""}
               >
                 {carregando ? "Processando..." : "Reservar"}
@@ -161,7 +169,9 @@ const Livro = () => {
 
               {mensagem && (
                 <div
-                  className={`mensagem ${mensagem.includes("sucesso") ? "success" : "error"}`}
+                  className={`mensagem ${
+                    mensagem.includes("sucesso") ? "success" : "error"
+                  }`}
                   role="alert"
                 >
                   {mensagem.includes("sucesso") ? "✅" : "❌"} {mensagem}
@@ -170,7 +180,10 @@ const Livro = () => {
 
               {reservasUsuario.length > 0 && (
                 <div className="reservas-info">
-                  <p>Você tem {reservasUsuario.length} livro(s) reservado(s) de um máximo de 3.</p>
+                  <p>
+                    Você tem {reservasUsuario.length} livro(s) reservado(s) de
+                    um máximo de 3.
+                  </p>
                 </div>
               )}
             </div>
@@ -181,8 +194,8 @@ const Livro = () => {
                 Ao reservar o livro, ele ficará disponível para o aluno por um
                 dia. Este livro pertence à instituição, portanto, o discente
                 deve ter cuidado e devolvê-lo em perfeito estado. Após a
-                reserva, o aluno terá uma semana para ler e devolver o
-                livro. Em caso de atraso, será aplicada uma multa.
+                reserva, o aluno terá uma semana para ler e devolver o livro. Em
+                caso de atraso, será aplicada uma multa.
                 <span> Limite de 3 reservas por usuário!</span>
               </p>
             </div>
