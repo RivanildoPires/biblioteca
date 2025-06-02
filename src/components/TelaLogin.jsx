@@ -30,18 +30,16 @@ const TelaLogin = () => {
         telefone: data.telefone || "",
       }));
 
-      switch (data.tipoUsuario) {
-        case "BIBLIOTECARIO":
-          navigate("/telaInicial");
-          break;
-        case "PROFESSOR":
-          navigate("/telaInicial");
-          break;
-        case "ALUNO":
+      const tipoUsuario = data.tipoUsuario?.toLowerCase();
+
+      switch (tipoUsuario) {
+        case "bibliotecario":
+        case "professor":
+        case "aluno":
           navigate("/telaInicial");
           break;
         default:
-          navigate("/telaInicial");
+          setError("Tipo de usuário desconhecido.");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);

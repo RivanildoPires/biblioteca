@@ -8,8 +8,6 @@ const MeuPerfil = ({ isOpen, onClose }) => {
     nome: "",
     email: "",
     telefone: "",
-    matricula: "",
-    tipoUsuario: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,33 +21,14 @@ const MeuPerfil = ({ isOpen, onClose }) => {
 
   const carregarDadosUsuario = async () => {
     try {
-      const usuarioId = localStorage.getItem("usuarioId");
-      if (!usuarioId) throw new Error("Usuário não autenticado");
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      if (!userData?.id) throw new Error("Usuário não autenticado");
 
-      const localData = localStorage.getItem(`userData-${usuarioId}`);
-      if (localData) {
-        const userData = JSON.parse(localData);
-        setFormData({
-          nome: userData.nome || "",
-          email: userData.email || "",
-          telefone: userData.telefone || "",
-          matricula: userData.matricula || "",
-          tipoUsuario: userData.tipoUsuario || userData.tipo || "",
-        });
-      } else {
-        const response = await api.get(`/usuario/${usuarioId}`);
-        const userData = response.data;
-
-        localStorage.setItem(`userData-${usuarioId}`, JSON.stringify(userData));
-
-        setFormData({
-          nome: userData.nome,
-          email: userData.email,
-          telefone: userData.telefone,
-          matricula: userData.matricula,
-          tipoUsuario: userData.tipoUsuario,
-        });
-      }
+      setFormData({
+        nome: userData.nome || "",
+        email: userData.email || "",
+        telefone: userData.telefone || "",
+      });
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
       setError("Erro ao carregar perfil");
@@ -71,23 +50,19 @@ const MeuPerfil = ({ isOpen, onClose }) => {
     setSuccess("");
 
     try {
-      const usuarioId = localStorage.getItem("usuarioId");
-      if (!usuarioId) throw new Error("Usuário não autenticado");
-
-      const localData = localStorage.getItem(`userData-${usuarioId}`);
-      const userData = localData ? JSON.parse(localData) : null;
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      if (!userData?.id) throw new Error("Usuário não autenticado");
 
       if (
-        userData &&
         userData.nome === formData.nome &&
         userData.email === formData.email &&
         userData.telefone === formData.telefone
       ) {
-        setSuccess("Nenhuma alteração detectada");
+        setSuccess("Nenhuma alteração detectada.");
         return;
       }
 
-      await api.put(`/usuario/${usuarioId}`, {
+      await api.put(`/usuario/${userData.id}`, {
         nome: formData.nome,
         email: formData.email,
         telefone: formData.telefone,
@@ -100,7 +75,7 @@ const MeuPerfil = ({ isOpen, onClose }) => {
         telefone: formData.telefone,
       };
 
-      localStorage.setItem(`userData-${usuarioId}`, JSON.stringify(updatedUser));
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
 
       setSuccess("Perfil atualizado com sucesso!");
       setTimeout(() => onClose(), 2000);
