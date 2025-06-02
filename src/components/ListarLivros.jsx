@@ -131,7 +131,7 @@ const LivroList = () => {
         </div>
       </div>
 
-      <Footer2 />
+      <Footer />
     </div>
   );
 };
