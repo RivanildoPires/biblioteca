@@ -23,15 +23,7 @@ const Livro = () => {
     try {
       const response = await api.get(`/livro/${id}`);
       setLivro(response.data);
-
-      if (response.data.quantidadeDisponivel !== undefined) {
-        setQuantidadeDisponivel(response.data.quantidadeDisponivel);
-      } else if (response.data.quantidade !== undefined) {
-        setQuantidadeDisponivel(response.data.quantidade);
-      } else {
-        console.warn("Quantidade não encontrada na resposta do livro.");
-        setQuantidadeDisponivel(0);
-      }
+      setQuantidadeDisponivel(response.data.quantidade);
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Erro ao buscar o livro"
