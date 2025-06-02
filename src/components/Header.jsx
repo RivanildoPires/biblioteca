@@ -9,7 +9,7 @@ import MeuPerfil from "./MeuPerfil";
 import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
 import CadastrarLivro from "./CadastrarLivro";
-import LivrosReservadosModal from "./LivrosReservadosModal";
+import LivrosReservados from "./LivrosReservados";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -95,7 +95,7 @@ const Header = () => {
                     Reservados
                   </button>
                   {modalType === "livros" && (
-                    <LivrosReservadosModal
+                    <LivrosReservados
                       isOpen={openModal}
                       onClose={closeModalHandler}
                     />
