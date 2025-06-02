@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { supabase } from './supabaseClient';
-import axios from 'axios';
+import React, { useState } from "react";
+import { supabase } from "../supabaseClient";
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001',
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
 });
 
 const CadastrarLivro = () => {
-  const [titulo, setTitulo] = useState('');
-  const [autor, setAutor] = useState('');
-  const [area, setArea] = useState('');
-  const [editora, setEditora] = useState('');
-  const [anoPublicado, setAnoPublicado] = useState('');
+  const [titulo, setTitulo] = useState("");
+  const [autor, setAutor] = useState("");
+  const [area, setArea] = useState("");
+  const [editora, setEditora] = useState("");
+  const [anoPublicado, setAnoPublicado] = useState("");
   const [imagemFile, setImagemFile] = useState(null);
-  const [mensagem, setMensagem] = useState('');
+  const [mensagem, setMensagem] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,12 +23,12 @@ const CadastrarLivro = () => {
     if (imagemFile) {
       const fileName = `${Date.now()}_${imagemFile.name}`;
       const { data, error } = await supabase.storage
-        .from('livros')
+        .from("livros")
         .upload(fileName, imagemFile);
 
       if (error) {
-        console.error('Erro ao fazer upload da imagem:', error.message);
-        setMensagem('Erro ao enviar imagem');
+        console.error("Erro ao fazer upload da imagem:", error.message);
+        setMensagem("Erro ao enviar imagem");
         return;
       }
 
@@ -45,17 +45,17 @@ const CadastrarLivro = () => {
     };
 
     try {
-      await api.post('/livro', novoLivro);
-      setMensagem('Livro cadastrado com sucesso!');
-      setTitulo('');
-      setAutor('');
-      setArea('');
-      setEditora('');
-      setAnoPublicado('');
+      await api.post("/livro", novoLivro);
+      setMensagem("Livro cadastrado com sucesso!");
+      setTitulo("");
+      setAutor("");
+      setArea("");
+      setEditora("");
+      setAnoPublicado("");
       setImagemFile(null);
     } catch (err) {
-      console.error('Erro ao cadastrar livro:', err);
-      setMensagem('Erro ao cadastrar livro');
+      console.error("Erro ao cadastrar livro:", err);
+      setMensagem("Erro ao cadastrar livro");
     }
   };
 

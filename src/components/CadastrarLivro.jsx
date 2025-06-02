@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { supabase } from "../supabase";
+import { supabase } from "../supabaseClient";
 import "./CadastrarUsuario.css";
 
 const api = axios.create({
