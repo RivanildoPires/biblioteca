@@ -52,7 +52,7 @@ const Livro = () => {
   const handleReserva = async () => {
     setCarregando(true);
     setMensagem(null);
-    
+
     try {
       const usuarioId = localStorage.getItem("usuarioId");
 
@@ -66,17 +66,21 @@ const Livro = () => {
 
       const isLivro6 = livro.idLivro === "6";
 
+      // ✅ Regra: Não reservar se só resta 1 exemplar e não for o livro 6
       if (!isLivro6 && quantidadeDisponivel <= 1) {
         throw new Error("Não é possível reservar. Resta apenas 1 exemplar disponível.");
       }
 
-      if (!isLivro6) {
-        const reservasLivro = await api.get(`/reserva/livro/${livro.idLivro}`);
-        if (reservasLivro.data.length >= 5) {
-          throw new Error("Limite de reservas para este livro atingido (máximo 5)");
-        }
+      // ✅ Regra: máximo de 5 reservas por livro
+      const reservasDoMesmoLivro = reservasUsuario.filter(
+        (r) => r.livro.idLivro === livro.idLivro && r.statusReserva !== "DEVOLVIDO"
+      );
+
+      if (!isLivro6 && reservasDoMesmoLivro.length >= 5) {
+        throw new Error("Limite de reservas para este livro atingido (máximo 5)");
       }
 
+      // ✅ Regra: máximo de 3 reservas ativas por usuário
       if (reservasUsuario.length >= 3) {
         throw new Error("Você já atingiu o limite de 3 reservas ativas");
       }
@@ -87,7 +91,7 @@ const Livro = () => {
       };
 
       const response = await api.post("/reserva", reservaData);
-      
+
       if (response.status === 201) {
         setMensagem("Reserva realizada com sucesso!");
         fetchLivro();
@@ -98,9 +102,9 @@ const Livro = () => {
     } catch (err) {
       console.error("Erro na reserva:", err);
       setMensagem(
-        err.response?.data?.message || 
-        err.response?.data || 
-        err.message || 
+        err.response?.data?.message ||
+        err.response?.data ||
+        err.message ||
         "Erro ao reservar o livro"
       );
     } finally {
@@ -148,8 +152,8 @@ const Livro = () => {
                 <p>{livro.sinopse}</p>
               </div>
 
-              <button 
-                onClick={handleReserva} 
+              <button
+                onClick={handleReserva}
                 disabled={carregando || (quantidadeDisponivel <= 1 && livro.idLivro !== "6")}
                 className={carregando ? "loading-button" : ""}
               >
@@ -157,7 +161,7 @@ const Livro = () => {
               </button>
 
               {mensagem && (
-                <div 
+                <div
                   className={`mensagem ${mensagem.includes("sucesso") ? "success" : "error"}`}
                   role="alert"
                 >
@@ -180,7 +184,7 @@ const Livro = () => {
                 deve ter cuidado e devolvê-lo em perfeito estado. Após a
                 reserva, o aluno terá uma semana para ler e devolver o
                 livro. Em caso de atraso, será aplicada uma multa.
-                <span>Limite de 3 reservas por usuário!</span>
+                <span> Limite de 3 reservas por usuário!</span>
               </p>
             </div>
           </section>
