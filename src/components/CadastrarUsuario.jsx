@@ -57,10 +57,10 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
   return (
     <div className="container-modal">
       <div className="conteudo">
-        <div className="btn-close">
-          <button onClick={onClose}>✕</button>
-        </div>
         <div className="form-container">
+          <div className="btn-close">
+            <button onClick={onClose}>✕</button>
+          </div>
           <h2 className="text">Cadastrar Usuário</h2>
 
           {error && <div className="alert error">{error}</div>}
@@ -79,7 +79,7 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
             <input
               type="password"
               name="password"
-              value={formData.password} 
+              value={formData.password}
               onChange={handleChange}
               placeholder="Senha"
               required
@@ -111,7 +111,7 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
               pattern="[0-9]{10,11}"
               title="Digite um telefone válido (10 ou 11 dígitos)"
             />
-            
+
             <select
               name="tipoUsuario"
               value={formData.tipoUsuario}
