@@ -57,10 +57,11 @@ const CadastrarUsuario = ({ isOpen, onClose }) => {
   return (
     <div className="container-modal">
       <div className="conteudo">
-        <div className="form-container">
-          <div className="btn-close">
+        <div className="btn-close">
             <button onClick={onClose}>✕</button>
           </div>
+        <div className="form-container">
+
           <h2 className="text">Cadastrar Usuário</h2>
 
           {error && <div className="alert error">{error}</div>}

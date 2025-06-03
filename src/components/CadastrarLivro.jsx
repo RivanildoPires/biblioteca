@@ -60,9 +60,9 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
 
       if (error) throw error;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("livros").getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage
+        .from("livros")
+        .getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error) {
@@ -126,13 +126,13 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
   return (
     <div className="container-modal">
       <div className="conteudo">
+        <div className="btn-close">
+          <button onClick={onClose}>✕</button>
+        </div>
+
         <h2 className="text">Cadastrar Livro</h2>
 
         <div className="form-container">
-          <div className="btn-close">
-            <button onClick={onClose}>✕</button>
-          </div>
-
           <form onSubmit={handleSubmit}>
             <input
               type="text"
@@ -217,9 +217,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
 
             <div className="image-upload-container">
               <label htmlFor="imagem" className="image-upload-label">
-                {imageFile
-                  ? imageFile.name
-                  : "Selecione uma imagem para a capa"}
+                {imageFile ? imageFile.name : "Selecione uma imagem para a capa"}
               </label>
               <input
                 type="file"
@@ -228,9 +226,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
                 onChange={handleImageChange}
                 className="image-upload-input"
               />
-              {isUploading && (
-                <div className="uploading-text">Enviando imagem...</div>
-              )}
+              {isUploading && <div className="uploading-text">Enviando imagem...</div>}
             </div>
 
             <div className="send">
@@ -238,6 +234,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
                 {isUploading ? "Enviando..." : "Cadastrar"}
               </button>
             </div>
+
           </form>
 
           {message && (

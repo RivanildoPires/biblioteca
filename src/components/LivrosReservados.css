@@ -120,9 +120,10 @@ h2 {
 .status-h6[data-status="ATRASADO"] {
   background-color: #dc3545;
 }
-.status-h6[data-status="DEVOLVIDO"] {
-  background-color: #6c757d;
+.status-h6[data-status="RESERVADO"] {
+  background-color: #007bff;
 }
+
 .status-reserva h3 {
   font-size: 16px;
   margin: 5px 0;

@@ -1,4 +1,4 @@
-footer {
+.footer1 {
   display: flex;
   background-color: #152d5d;
   justify-content: center;
@@ -7,7 +7,7 @@ footer {
   position: fixed;
 }
 
-footer h3 {
+.footer h3 {
   color: #ffffff;
   text-align: center;
   padding: 10px;

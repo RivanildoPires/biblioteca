@@ -94,63 +94,63 @@ const MeuPerfil = ({ isOpen, onClose }) => {
   return (
     <div className="container-modal">
       <div className="conteudo">
-        <div className="form-container">
-          <div className="btn-close">
-            <button onClick={onClose}>✕</button>
+        <div className="btn-close">
+          <button onClick={onClose}>✕</button>
+        </div>
+          <div className="form-container">
+            <h2 className="text">Meu Perfil</h2>
+
+            {error && <div className="alert error">{error}</div>}
+            {success && <div className="alert success">{success}</div>}
+
+            <form onSubmit={handleSubmit}>
+              <input
+                id="nome"
+                type="text"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                required
+              />
+              <input
+                id="email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <input
+                id="telefone"
+                type="tel"
+                name="telefone"
+                value={formData.telefone}
+                onChange={handleChange}
+                required
+                pattern="[0-9]{10,11}"
+                title="Digite um telefone válido (10 ou 11 dígitos)"
+              />
+
+              <div className="send">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={loading ? "loading" : ""}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner"></span>
+                      Salvando...
+                    </>
+                  ) : (
+                    "Salvar Alterações"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-          <h2 className="text">Meu Perfil</h2>
-
-          {error && <div className="alert error">{error}</div>}
-          {success && <div className="alert success">{success}</div>}
-
-          <form onSubmit={handleSubmit}>
-            <input
-              id="nome"
-              type="text"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              required
-            />
-            <input
-              id="email"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-            <input
-              id="telefone"
-              type="tel"
-              name="telefone"
-              value={formData.telefone}
-              onChange={handleChange}
-              required
-              pattern="[0-9]{10,11}"
-              title="Digite um telefone válido (10 ou 11 dígitos)"
-            />
-
-            <div className="send">
-              <button
-                type="submit"
-                disabled={loading}
-                className={loading ? "loading" : ""}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner"></span>
-                    Salvando...
-                  </>
-                ) : (
-                  "Salvar Alterações"
-                )}
-              </button>
-            </div>
-          </form>
         </div>
       </div>
-    </div>
   );
 };
 

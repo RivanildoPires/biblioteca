@@ -19,7 +19,6 @@
   min-height: 500px;
   border-radius: 30px;
 }
-
 .btn-close {
   position: absolute;
   top: 15px;
@@ -38,7 +37,6 @@
 .btn-close button:hover {
   color: #000;
 }
-
 .text {
   display: flex;
   justify-content: start;

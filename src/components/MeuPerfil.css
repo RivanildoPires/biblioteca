@@ -21,15 +21,22 @@
 }
 
 .btn-close {
-    display: flex;
-    justify-content: end;
-    align-items: start;
+  position: absolute;
+  top: 15px;
+  right: 20px;
 }
 
 .btn-close button {
-    color: #6e6e6e;
-    background-color: #FAFAFA;
-    font-size: 24px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.3s;
+}
+
+.btn-close button:hover {
+  color: #000;
 }
 
 .cont-info {
