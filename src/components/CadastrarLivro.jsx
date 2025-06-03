@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { supabase } from "./supabaseClient"; // Importe a conexão do Supabase
+import { supabase } from "../supabaseClient";
 import "./CadastrarUsuario.css";
 
 const api = axios.create({
@@ -55,12 +55,11 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
       const filePath = `${fileName}`;
 
       const { data, error } = await supabase.storage
-        .from("livros") // Nome do bucket no Supabase
+        .from("livros")
         .upload(filePath, imageFile);
 
       if (error) throw error;
 
-      // Obtém a URL pública da imagem
       const { data: { publicUrl } } = supabase.storage
         .from("livros")
         .getPublicUrl(filePath);
