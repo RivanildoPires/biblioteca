@@ -27,11 +27,12 @@ const LivrosReservados = ({ isOpen, onClose }) => {
         }
 
         const response = await api.get(`/reserva/${usuarioId}`);
-
         setReservas(response.data);
       } catch (err) {
         setErro(
-          err.response?.data?.message || err.message || "Erro ao carregar reservas"
+          err.response?.data?.message ||
+            err.message ||
+            "Erro ao carregar reservas"
         );
       } finally {
         setCarregando(false);
@@ -42,6 +43,19 @@ const LivrosReservados = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+ 
+  const calcularDiferencaDias = (dataDevolucao) => {
+    if (!dataDevolucao) return null;
+
+    const agora = new Date();
+    const devolucao = new Date(dataDevolucao);
+
+    const diffTime = devolucao - agora;
+    const diffDias = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDias;
+  };
 
   return (
     <div className="modal-overlay">
@@ -59,52 +73,70 @@ const LivrosReservados = ({ isOpen, onClose }) => {
             {reservas.length === 0 ? (
               <p>Você não possui livros reservados.</p>
             ) : (
-              reservas.map((reserva) => (
-                <div key={reserva.idReserva} className="reserva-board">
-                  <ul>
-                    <li>
-                      <strong>Título:</strong> {reserva.livro?.titulo || "N/A"}
-                    </li>
-                    <li>
-                      <strong>Autor:</strong> {reserva.livro?.autor || "N/A"}
-                    </li>
-                    <li>
-                      <strong>Ano:</strong> {reserva.livro?.anoPublicado || "N/A"}
-                    </li>
-                    <li>
-                      <strong>Área:</strong> {reserva.livro?.area || "N/A"}
-                    </li>
-                  </ul>
+              reservas.map((reserva) => {
+                const diffDias = calcularDiferencaDias(reserva.dataDevolucao);
 
-                  <div className="status-reserva">
-                    <h6>Status de Reserva</h6>
-                    <h3 data-status={reserva.status}>{reserva.status}</h3>
+                return (
+                  <div key={reserva.idReserva} className="reserva-board">
+                    <ul>
+                      <li>
+                        <strong>Título:</strong>{" "}
+                        {reserva.livro?.titulo || "N/A"}
+                      </li>
+                      <li>
+                        <strong>Autor:</strong>{" "}
+                        {reserva.livro?.autor || "N/A"}
+                      </li>
+                      <li>
+                        <strong>Ano:</strong>{" "}
+                        {reserva.livro?.anoPublicado || "N/A"}
+                      </li>
+                      <li>
+                        <strong>Área:</strong>{" "}
+                        {reserva.livro?.area || "N/A"}
+                      </li>
+                    </ul>
 
-                    {reserva.status === "RESERVADO" && (
-                      <>
-                        <p>Prazo para retirada:</p>
-                        <p>{reserva.diasRestantes || "-" } dias úteis</p>
-                      </>
-                    )}
+                    <div className="status-reserva">
+                      <h6>Status de Reserva</h6>
+                      <h3 data-status={reserva.statusReserva}>
+                        {reserva.statusReserva}
+                      </h3>
 
-                    {reserva.status === "OK" && (
-                      <>
-                        <p>Prazo para devolução:</p>
-                        <p>{reserva.diasRestantes || "-"} dias úteis</p>
-                      </>
-                    )}
+                      {reserva.statusReserva === "RESERVADO" && (
+                        <>
+                          <p>Prazo para retirada:</p>
+                          <p>
+                            {diffDias > 0 ? diffDias : 0} dias úteis
+                          </p>
+                        </>
+                      )}
 
-                    {reserva.status === "ATRASADO" && (
-                      <>
-                        <p>Dias em atraso:</p>
-                        <p>{reserva.diasEmAtraso || "-" } dias</p>
-                      </>
-                    )}
+                      {reserva.statusReserva === "OK" && (
+                        <>
+                          <p>Prazo para devolução:</p>
+                          <p>
+                            {diffDias > 0 ? diffDias : 0} dias úteis
+                          </p>
+                        </>
+                      )}
 
-                    {reserva.status === "DEVOLVIDO" && <p>Livro devolvido.</p>}
+                      {reserva.statusReserva === "ATRASADO" && (
+                        <>
+                          <p>Dias em atraso:</p>
+                          <p>
+                            {diffDias < 0 ? Math.abs(diffDias) : 0} dias
+                          </p>
+                        </>
+                      )}
+
+                      {reserva.statusReserva === "DEVOLVIDO" && (
+                        <p>Livro devolvido.</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </>
         )}

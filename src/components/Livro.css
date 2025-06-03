@@ -172,13 +172,3 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
-
-.logo-faculdade{
-  position: relative;
-  right: -1460px;
-}
-
-.logo-faculdade img {
-  width: 200px;
-  height: 80px;
-}

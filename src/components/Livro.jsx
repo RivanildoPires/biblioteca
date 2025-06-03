@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./Livro.css";
 import faculdade from "../assets/faculdade.png";
 import Header from "./Header";
-import Footer from "./Footer";
+import Footer2 from "./Footer2";
 import axios from "axios";
 
 const api = axios.create({
@@ -206,14 +206,11 @@ const Livro = () => {
                 <span> Limite de 3 reservas por usuário!</span>
               </p>
             </div>
-            <div className="logo-faculdade">
-              <img src={faculdade} alt="Faculdade"></img>
-            </div>
           </section>
         </main>
       </div>
 
-      <Footer />
+      <Footer2 />
     </div>
   );
 };
