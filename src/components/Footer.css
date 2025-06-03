@@ -1,4 +1,4 @@
-.footer {
+footer {
   display: flex;
   background-color: #152d5d;
   justify-content: center;
@@ -7,7 +7,7 @@
   position: fixed;
 }
 
-.footer h3 {
+footer h3 {
   color: #ffffff;
   text-align: center;
   padding: 10px;

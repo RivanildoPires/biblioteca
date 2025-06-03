@@ -1,11 +1,11 @@
-footer {
+.footer {
   display: flex;
   background-color: #152d5d;
   justify-content: center;
   width: 100%;
 }
 
-footer h3 {
+.footer h3 {
   color: #ffffff;
   text-align: center;
   padding: 10px;

@@ -130,7 +130,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
           <button onClick={onClose}>✕</button>
         </div>
 
-        <div className="text">Cadastrar Livro</div>
+        <h2 className="text">Cadastrar Livro</h2>
 
         <div className="form-container">
           <form onSubmit={handleSubmit}>

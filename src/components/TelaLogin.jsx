@@ -71,9 +71,8 @@ const TelaLogin = () => {
                   required
                 />
                 <input id="submit" type="submit" value="Entrar" />
-
-                {error && <p className="error-message">{error}</p>}
               </form>
+              {error && <p className="error-message">{error}</p>}
             </div>
           </div>
         </div>

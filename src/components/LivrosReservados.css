@@ -84,6 +84,8 @@ h2 {
   list-style: none;
   padding: 0;
   margin: 0;
+  position: relative;
+  top: 40px;
 }
 
 .reserva-board li {
