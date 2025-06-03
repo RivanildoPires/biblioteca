@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
+import api from '../api';
 import './CadastrarUsuario.css';
 
 const CadastrarLivro = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     titulo: '',
-    autor: '',
     area: '',
+    autor: '',
+    quantidade: 1,
+    sinopse: '',
     editora: '',
-    ano_publicacao: '',
+    anoPublicado: '',
   });
 
   const [imagemFile, setImagemFile] = useState(null);
@@ -16,13 +19,15 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: name === 'quantidade' || name === 'anoPublicado'
+      ? Math.max(1, parseInt(value, 10) || 1)
+      : value,
+  }));
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,52 +36,55 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     setSuccess('');
 
     try {
-      let imagemUrl = null;
 
-      // Upload da imagem se existir
+      let imagemUrl = '';
       if (imagemFile) {
         const fileName = `${Date.now()}_${imagemFile.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('livros')
           .upload(fileName, imagemFile);
 
         if (uploadError) throw uploadError;
 
-        // Obtém a URL pública da imagem
-        const { data: urlData } = supabase.storage
+        const { data: { publicUrl } } = supabase.storage
           .from('livros')
           .getPublicUrl(fileName);
 
-        imagemUrl = urlData.publicUrl;
+        imagemUrl = publicUrl;
       }
 
-      // Insere o livro no banco de dados
-      const { data: livroData, error: livroError } = await supabase
-        .from('livros')
-        .insert([{
-          ...formData,
-          ano_publicacao: parseInt(formData.ano_publicacao, 10),
-          imagem_url: imagemUrl,
-          user_id: null // Para usuários não autenticados
-        }])
-        .select();
+      const livroData = {
+        titulo: formData.titulo,
+        area: formData.area,
+        autor: formData.autor,
+        quantidade: formData.quantidade,
+        sinopse: formData.sinopse,
+        editora: formData.editora,
+        anoPublicado: formData.anoPublicado,
+        imagemUrl: imagemUrl
+      };
 
-      if (livroError) throw livroError;
-
+      const response = await api.post('/livro', livroData);
+      
       setSuccess('Livro cadastrado com sucesso!');
       setFormData({
         titulo: '',
-        autor: '',
         area: '',
+        autor: '',
+        quantidade: 1,
+        sinopse: '',
         editora: '',
-        ano_publicacao: '',
+        anoPublicado: '',
       });
       setImagemFile(null);
 
       setTimeout(() => onClose(), 2000);
-    } catch (err) {
-      console.error('Erro ao cadastrar livro:', err);
-      setError(err.message || 'Erro ao cadastrar livro. Tente novamente.');
+    } catch (error) {
+      console.error('Erro ao cadastrar livro:', error);
+      setError(
+        error.response?.data?.message || 
+        'Erro ao cadastrar livro. Tente novamente.'
+      );
     } finally {
       setLoading(false);
     }
@@ -108,6 +116,15 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
 
             <input
               type="text"
+              name="area"
+              value={formData.area}
+              onChange={handleChange}
+              placeholder="Área"
+              required
+            />
+
+            <input
+              type="text"
               name="autor"
               value={formData.autor}
               onChange={handleChange}
@@ -116,12 +133,22 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
             />
 
             <input
-              type="text"
-              name="area"
-              value={formData.area}
+              type="number"
+              name="quantidade"
+              value={formData.quantidade}
               onChange={handleChange}
-              placeholder="Área"
+              placeholder="Quantidade"
               required
+              min="1"
+            />
+
+            <textarea
+              name="sinopse"
+              value={formData.sinopse}
+              onChange={handleChange}
+              placeholder="Sinopse"
+              required
+              rows="3"
             />
 
             <input
@@ -135,11 +162,13 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
 
             <input
               type="number"
-              name="ano_publicacao"
-              value={formData.ano_publicacao}
+              name="anoPublicado"
+              value={formData.anoPublicado}
               onChange={handleChange}
               placeholder="Ano de Publicação"
               required
+              min="1900"
+              max={new Date().getFullYear()}
             />
 
             <input
