@@ -20,22 +20,15 @@
   border-radius: 30px;
 }
 .btn-close {
-  position: absolute;
-  top: 15px;
-  right: 20px;
+  display: flex;
+  justify-content: end;
+  align-items: start;
 }
 
 .btn-close button {
-  background: none;
-  border: none;
+  color: #6e6e6e;
+  background-color: #FAFAFA;
   font-size: 24px;
-  cursor: pointer;
-  color: #555;
-  transition: color 0.3s;
-}
-
-.btn-close button:hover {
-  color: #000;
 }
 .text {
   display: flex;

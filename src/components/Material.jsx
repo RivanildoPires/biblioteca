@@ -37,7 +37,6 @@ const Material = () => {
               </div>
               <div className="tcc"></div>
               <div className="tcc"></div>
-              <div className="tcc"></div>
             </section>
           </main>
         </div>
