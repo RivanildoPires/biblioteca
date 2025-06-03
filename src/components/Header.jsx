@@ -10,6 +10,7 @@ import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
 import CadastrarLivro from "./CadastrarLivro";
 import LivrosReservados from "./LivrosReservados";
+import LivrosPublicos from "./LivrosPublicos";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -128,7 +129,9 @@ const Header = () => {
                 <Link to={"/livros"}>
                   <th>Livros</th>
                 </Link>
+                <Link to={"/livrosPublicos"}>
                 <th>Livros Públicos</th>
+                </Link>
                 <Link to={"/tcc"}>
                   <th>TCC</th>
                 </Link>

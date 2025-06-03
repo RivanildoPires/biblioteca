@@ -64,3 +64,8 @@
     color: #0059FF;
     transform: scale(1.1);
 }
+
+.error-message{
+    position: relative;
+    top: 25px;
+}

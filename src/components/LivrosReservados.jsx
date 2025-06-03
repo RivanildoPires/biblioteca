@@ -98,7 +98,9 @@ const LivrosReservados = ({ isOpen, onClose }) => {
                     </ul>
 
                     <div className="status-reserva">
+                      <div className="status-h6">
                       <h6>Status de Reserva</h6>
+                      </div>
                       <h3 data-status={reserva.statusReserva}>
                         {reserva.statusReserva}
                       </h3>

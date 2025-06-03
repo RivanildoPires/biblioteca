@@ -17,7 +17,8 @@ function App() {
         <Route path="/tcc" element={<ListarTCC />} />
         <Route path="/material" element={<Material />} />
         <Route path="/" element={<TelaLogin />} />
-         <Route path="/livroReserva" element={<LivrosReservados />} />
+        <Route path="/livroReserva" element={<LivrosReservados />} />
+        <Route path="/livrosPublicos" element={<LivrosPublicos />} />
       </Routes>
     </Router>
   );
