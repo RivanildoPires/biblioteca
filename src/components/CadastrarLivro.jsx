@@ -235,16 +235,6 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
               </button>
             </div>
 
-            <div className="send" style={{ marginTop: "10px" }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{ backgroundColor: "#6e6e6e" }}
-                disabled={isUploading}
-              >
-                Cancelar
-              </button>
-            </div>
           </form>
 
           {message && (
