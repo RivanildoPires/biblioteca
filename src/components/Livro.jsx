@@ -22,7 +22,6 @@ const Livro = () => {
     try {
       const response = await api.get(`/livro/${id}`);
       setLivro(response.data);
-
       setQuantidadeDisponivel(response.data.quantidade || 0);
     } catch (err) {
       setError(
@@ -138,10 +137,15 @@ const Livro = () => {
         <main>
           <section className="sec">
             <div className="livro-info">
-              <img
-                src={livro.urlImagem}
-                alt={`Capa do livro ${livro.titulo}`}
-              />
+              <div className="livro-imagem-container">
+                <img
+                  src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
+                  alt={`Capa do livro ${livro.titulo}`}
+                  onError={(e) => {
+                    e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
+                  }}
+                />
+              </div>
               <ul>
                 <li>Autor: {livro.autor}</li>
                 <li>Publicado: {livro.anoPublicado}</li>

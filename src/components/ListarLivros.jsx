@@ -114,10 +114,15 @@ const LivroList = () => {
                 {filteredLivros.map((livro) => (
                   <Link key={livro.idLivro} to={`/livro/${livro.idLivro}`}>
                     <div className="livro">
-                      <img
-                        src={livro.urlImagem}
-                        alt={`Capa do livro ${livro.titulo}`}
-                      />
+                      <div className="livro-imagem-container">
+                        <img
+                          src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
+                          alt={`Capa do livro ${livro.titulo}`}
+                          onError={(e) => {
+                            e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
+                          }}
+                        />
+                      </div>
                       <h5>{livro.titulo}</h5>
                     </div>
                   </Link>
