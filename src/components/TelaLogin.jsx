@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./TelaLogin.css";
-import livros from "../assets/livros.jpeg";
 import telalogin from "../assets/tela-login.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
