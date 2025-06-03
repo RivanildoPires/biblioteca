@@ -23,13 +23,13 @@
   font-family: Arial, sans-serif;
 }
 
-.btn-close {
+.butn-close {
   position: absolute;
   top: 15px;
   right: 20px;
 }
 
-.btn-close button {
+.butn-close button {
   background: none;
   border: none;
   font-size: 24px;
@@ -38,7 +38,7 @@
   transition: color 0.3s;
 }
 
-.btn-close button:hover {
+.butn-close button:hover {
   color: #000;
 }
 

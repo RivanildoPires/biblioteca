@@ -60,7 +60,7 @@ const LivrosReservados = ({ isOpen, onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <div className="btn-close">
+        <div className="butn-close">
           <button onClick={onClose}>✕</button>
         </div>
         <h2>Livros Reservados</h2>
