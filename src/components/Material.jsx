@@ -1,6 +1,6 @@
 import Header from "./Header";
 import "./ListarTCC.css"
-import Footer2 from "./Footer2";
+import Footer from "./Footer";
 
 const Material = () => {
   return (
@@ -41,7 +41,7 @@ const Material = () => {
           </main>
         </div>
       </div>
-      <Footer2 />
+      <Footer/>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./Livro.css";
 import faculdade from "../assets/faculdade.png";
 import Header from "./Header";
-import Footer2 from "./Footer2";
+import Footer from "./Footer";
 import axios from "axios";
 
 const api = axios.create({
@@ -210,7 +210,7 @@ const Livro = () => {
         </main>
       </div>
 
-      <Footer2 />
+      <Footer/>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import "./ListarLivros.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
-import Footer2 from "./Footer2";
+import Footer from "./Footer";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
@@ -133,7 +133,7 @@ const LivrosPublicos = () => {
         </div>
       </div>
 
-      <Footer2 />
+      <Footer/>
     </div>
   );
 };
