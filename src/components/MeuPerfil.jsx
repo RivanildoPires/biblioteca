@@ -151,7 +151,6 @@ const MeuPerfil = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
