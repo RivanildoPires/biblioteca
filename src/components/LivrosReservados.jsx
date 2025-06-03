@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
 });
 
-const LivrosReservadosModal = ({ isOpen, onClose }) => {
+const LivrosReservados = ({ isOpen, onClose }) => {
   const [reservas, setReservas] = useState([]);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState(null);
@@ -46,9 +46,9 @@ const LivrosReservadosModal = ({ isOpen, onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
-          X
-        </button>
+        <div className="btn-close">
+          <button onClick={onClose}>✕</button>
+        </div>
         <h2>Livros Reservados</h2>
 
         {carregando && <div className="loading">Carregando reservas...</div>}
@@ -113,4 +113,4 @@ const LivrosReservadosModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default LivrosReservadosModal;
+export default LivrosReservados;

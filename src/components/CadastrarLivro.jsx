@@ -127,7 +127,7 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     <div className="container-modal">
       <div className="conteudo">
         <div className="btn-close">
-          <button onClick={onClose}>&times;</button>
+          <button onClick={onClose}>✕</button>
         </div>
 
         <div className="text">Cadastrar Livro</div>

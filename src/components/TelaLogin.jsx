@@ -70,8 +70,9 @@ const TelaLogin = () => {
                   placeholder="Senha"
                   required
                 />
-                {error && <p className="error-message">{error}</p>}
                 <input id="submit" type="submit" value="Entrar" />
+
+                {error && <p className="error-message">{error}</p>}
               </form>
             </div>
           </div>

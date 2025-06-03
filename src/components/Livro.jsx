@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./Livro.css";
+import faculdade from "../assets/faculdade.png";
 import Header from "./Header";
 import Footer from "./Footer";
 import axios from "axios";
@@ -78,10 +79,8 @@ const Livro = () => {
           r.livro.idLivro === livro.idLivro && r.statusReserva !== "DEVOLVIDO"
       );
 
-      if (!isLivro6 && reservasDoMesmoLivro.length >= 5) {
-        throw new Error(
-          "Limite de reservas para este livro atingido (máximo 5)"
-        );
+      if (reservasDoMesmoLivro.length >= 1) {
+        throw new Error("Você já possui uma reserva ativa deste livro");
       }
 
       if (reservasUsuario.length >= 3) {
@@ -139,10 +138,14 @@ const Livro = () => {
             <div className="livro-info">
               <div className="livro-imagem-container">
                 <img
-                  src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
+                  src={
+                    livro.imagemUrl ||
+                    "https://placehold.co/300x450?text=Sem+Imagem"
+                  }
                   alt={`Capa do livro ${livro.titulo}`}
                   onError={(e) => {
-                    e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
+                    e.target.src =
+                      "https://placehold.co/300x450?text=Imagem+Não+Disponível";
                   }}
                 />
               </div>
@@ -202,6 +205,9 @@ const Livro = () => {
                 caso de atraso, será aplicada uma multa.
                 <span> Limite de 3 reservas por usuário!</span>
               </p>
+            </div>
+            <div className="logo-faculdade">
+              <img src={faculdade} alt="Faculdade"></img>
             </div>
           </section>
         </main>
