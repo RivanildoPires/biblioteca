@@ -17,7 +17,7 @@ const areas = [
   { label: "Matemática", value: "matematica" },
 ];
 
-const LivroList = () => {
+const LivrosPublicos = () => {
   const [livros, setLivros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -138,4 +138,4 @@ const LivroList = () => {
   );
 };
 
-export default LivroList;
+export default LivrosPublicos;
