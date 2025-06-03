@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./MeuPerfil.css";
-import MacianoYasuo from "../assets/MacianoYasuo.jpg";
 import api from "../api";
 
 const MeuPerfil = ({ isOpen, onClose }) => {
@@ -98,12 +97,6 @@ const MeuPerfil = ({ isOpen, onClose }) => {
         <div className="btn-close">
           <button onClick={onClose}>✕</button>
         </div>
-        <div className="cont-info">
-          <img
-            src={MacianoYasuo}
-            alt="Foto do perfil"
-            className="profile-img"
-          />
           <div className="form-container">
             <h2 className="text">Meu Perfil</h2>
 

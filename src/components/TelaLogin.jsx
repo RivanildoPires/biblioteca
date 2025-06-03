@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./TelaLogin.css";
 import livros from "../assets/livros.jpeg";
-import logo from "../assets/logologin.png";
+import telalogin from "../assets/tela-login.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -51,31 +51,27 @@ const TelaLogin = () => {
     <div>
       <main>
         <div id="main-container">
-          <div id="banner-container">
-            <img src={livros} alt="Livros" />
-          </div>
           <div id="form-container">
             <div id="form-box">
-              <img id="logo-faculdade" src={logo} alt="Logo da faculdade" />
+              <img id="logo-faculdade" src={telalogin} alt="Logo da bibliteca" />
               <form id="login-form" onSubmit={handleSubmit}>
-                <p>Matrícula</p>
                 <input
                   id="login"
                   type="text"
                   value={matricula}
                   onChange={(e) => setMatricula(e.target.value)}
+                  placeholder="Matricula"
                   required
                 />
-                <p>Senha</p>
                 <input
                   id="senha"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Senha"
                   required
                 />
                 {error && <p className="error-message">{error}</p>}
-                <a href="#">Esqueceu a sua senha?</a>
                 <input id="submit" type="submit" value="Entrar" />
               </form>
             </div>
