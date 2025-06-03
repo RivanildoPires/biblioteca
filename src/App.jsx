@@ -7,6 +7,7 @@ import ListarTCC from "./components/ListarTCC";
 import Material from "./components/Material";
 import TelaLogin from "./components/TelaLogin";
 import LivrosReservados from "./components/LivrosReservados";
+import LivrosPublicos from "./components/LivrosPublicos";
 function App() {
   return (
     <Router>
