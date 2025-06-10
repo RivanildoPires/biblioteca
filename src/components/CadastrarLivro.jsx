@@ -16,57 +16,36 @@ const areas = [
 ];
 
 const CadastrarLivro = ({ isOpen, onClose }) => {
-  const [modo, setModo] = useState("livro");
-  const [formData, setFormData] = useState({
-    titulo: "",
-    area: "",
-    autor: "",
-    quantidade: "",
-    sinopse: "",
-    editora: "",
-    anoPublicado: "",
+  const [abaAtual, setAbaAtual] = useState("livro");
+  const [formLivro, setFormLivro] = useState({
+    titulo: "", area: "", autor: "", quantidade: "", sinopse: "",
+    editora: "", anoPublicado: "", imagemUrl: ""
   });
-  const [materialData, setMaterialData] = useState({
-    titulo: "",
-    area: "",
-    autor: "",
-    sinopse: "",
+
+  const [formMaterial, setFormMaterial] = useState({
+    titulo: "", area: "", autor: "", sinopse: "", pdf: null
+  });
+
+  const [formTcc, setFormTcc] = useState({
+    titulo: "", area: "", autor: "", sinopse: "", pdf: null
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleChange = (e, isMaterial = false) => {
-    const { name, value } = e.target;
-    if (isMaterial) {
-      setMaterialData((prev) => ({ ...prev, [name]: value }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) setImageFile(e.target.files[0]);
-  };
-
-  const handlePdfChange = (e) => {
-    if (e.target.files[0]) setPdfFile(e.target.files[0]);
-  };
-
-  const uploadToSupabase = async (file, folder) => {
+  const uploadPDF = async (file) => {
     if (!file) return null;
     setIsUploading(true);
     try {
       const ext = file.name.split(".").pop();
-      const name = `${Date.now()}.${ext}`;
-      const { data, error } = await supabase.storage.from(folder).upload(name, file);
+      const fileName = `${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("livros").upload(fileName, file);
       if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from(folder).getPublicUrl(name);
-      return publicUrl;
+      const { data } = supabase.storage.from("livros").getPublicUrl(fileName);
+      return data.publicUrl;
     } catch (err) {
-      console.error("Erro ao fazer upload:", err);
+      console.error("Erro ao fazer upload do arquivo:", err);
       setMessage("Erro ao fazer upload do arquivo.");
       return null;
     } finally {
@@ -74,37 +53,86 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-
+  const uploadImage = async () => {
+    if (!imageFile) return null;
+    setIsUploading(true);
     try {
-      if (modo === "livro") {
-        const imagemUrl = imageFile ? await uploadToSupabase(imageFile, "livros") : "";
-        await api.post("/livro", {
-          ...formData,
-          quantidade: Number(formData.quantidade),
-          anoPublicado: Number(formData.anoPublicado),
-          imagemUrl: imagemUrl || "https://placehold.co/600x400?text=Sem+Imagem",
-        });
-        setMessage("Livro cadastrado com sucesso!");
-      } else {
-        const pdfUrl = pdfFile ? await uploadToSupabase(pdfFile, "materiais") : null;
-        if (!pdfUrl) return;
-
-        await api.post("/materialacademico", {
-          ...materialData,
-          pdfUrl,
-        });
-        setMessage("Material acadêmico cadastrado com sucesso!");
-      }
-
-      setTimeout(() => {
-        setMessage("");
-        onClose();
-      }, 1500);
+      const ext = imageFile.name.split(".").pop();
+      const fileName = `${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("livros").upload(fileName, imageFile);
+      if (error) throw error;
+      const { data } = supabase.storage.from("livros").getPublicUrl(fileName);
+      return data.publicUrl;
     } catch (error) {
-      setMessage("Erro ao cadastrar. Tente novamente.");
+      console.error("Erro ao fazer upload da imagem:", error);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleLivroChange = (e) => {
+    const { name, value } = e.target;
+    setFormLivro((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePDFChange = (e, tipo) => {
+    const file = e.target.files[0];
+    if (tipo === "material") setFormMaterial((prev) => ({ ...prev, pdf: file }));
+    else if (tipo === "tcc") setFormTcc((prev) => ({ ...prev, pdf: file }));
+  };
+
+  const handleSubmitLivro = async (e) => {
+    e.preventDefault();
+    if (!formLivro.area) return setMessage("Selecione uma área.");
+    const imgUrl = imageFile ? await uploadImage() : "";
+    try {
+      await api.post("/livro", {
+        ...formLivro,
+        quantidade: Number(formLivro.quantidade),
+        anoPublicado: Number(formLivro.anoPublicado),
+        imagemUrl: imgUrl || "https://placehold.co/600x400?text=Sem+Imagem"
+      });
+      setMessage("Livro cadastrado com sucesso!");
+      setFormLivro({
+        titulo: "", area: "", autor: "", quantidade: "", sinopse: "",
+        editora: "", anoPublicado: "", imagemUrl: ""
+      });
+      setImageFile(null);
+    } catch (err) {
+      setMessage("Erro ao cadastrar livro.");
+    }
+  };
+
+  const handleSubmitMaterial = async (e) => {
+    e.preventDefault();
+    const pdfUrl = await uploadPDF(formMaterial.pdf);
+    if (!pdfUrl) return;
+    try {
+      await api.post("/material", {
+        ...formMaterial,
+        pdfUrl,
+      });
+      setMessage("Material cadastrado com sucesso!");
+      setFormMaterial({ titulo: "", area: "", autor: "", sinopse: "", pdf: null });
+    } catch (err) {
+      setMessage("Erro ao cadastrar material.");
+    }
+  };
+
+  const handleSubmitTcc = async (e) => {
+    e.preventDefault();
+    const pdfUrl = await uploadPDF(formTcc.pdf);
+    if (!pdfUrl) return;
+    try {
+      await api.post("/tcc", {
+        ...formTcc,
+        pdfUrl,
+      });
+      setMessage("TCC cadastrado com sucesso!");
+      setFormTcc({ titulo: "", area: "", autor: "", sinopse: "", pdf: null });
+    } catch (err) {
+      setMessage("Erro ao cadastrar TCC.");
     }
   };
 
@@ -117,102 +145,77 @@ const CadastrarLivro = ({ isOpen, onClose }) => {
           <button onClick={onClose}>✕</button>
         </div>
 
-        <div className="mode-switch">
-          <button onClick={() => setModo("livro")} className={modo === "livro" ? "active" : ""}>
-            Cadastrar Livro
-          </button>
-          <button onClick={() => setModo("material")} className={modo === "material" ? "active" : ""}>
-            Cadastrar Material
-          </button>
+        <div className="tabs">
+          <button onClick={() => setAbaAtual("livro")}>Livro</button>
+          <button onClick={() => setAbaAtual("material")}>Material</button>
+          <button onClick={() => setAbaAtual("tcc")}>TCC</button>
         </div>
 
-        <h2 className="text">{modo === "livro" ? "Cadastrar Livro" : "Cadastrar Material Acadêmico"}</h2>
+        {abaAtual === "livro" && (
+          <>
+            <h2>Cadastrar Livro</h2>
+            <form onSubmit={handleSubmitLivro}>
+              <input type="text" name="titulo" placeholder="Título" value={formLivro.titulo} onChange={handleLivroChange} required />
+              <select name="area" value={formLivro.area} onChange={handleLivroChange} required>
+                <option value="">Selecione</option>
+                {areas.map((a) => (
+                  <option key={a.value} value={a.value}>{a.label}</option>
+                ))}
+              </select>
+              <input type="text" name="autor" placeholder="Autor" value={formLivro.autor} onChange={handleLivroChange} required />
+              <input type="number" name="quantidade" placeholder="Quantidade" value={formLivro.quantidade} onChange={handleLivroChange} required />
+              <textarea name="sinopse" placeholder="Sinopse" value={formLivro.sinopse} onChange={handleLivroChange} required />
+              <input type="text" name="editora" placeholder="Editora" value={formLivro.editora} onChange={handleLivroChange} required />
+              <input type="number" name="anoPublicado" placeholder="Ano de Publicação" value={formLivro.anoPublicado} onChange={handleLivroChange} required />
+              <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
+              <button type="submit" disabled={isUploading}>Cadastrar</button>
+            </form>
+          </>
+        )}
 
-        <form onSubmit={handleSubmit} className="form-container">
-          <input
-            type="text"
-            name="titulo"
-            placeholder="Título"
-            value={modo === "livro" ? formData.titulo : materialData.titulo}
-            onChange={(e) => handleChange(e, modo === "material")}
-            required
-          />
+        {abaAtual === "material" && (
+          <>
+            <h2>Cadastrar Material</h2>
+            <form onSubmit={handleSubmitMaterial}>
+              <input type="text" name="titulo" placeholder="Título" value={formMaterial.titulo} onChange={(e) => setFormMaterial((p) => ({ ...p, titulo: e.target.value }))} required />
+              <select name="area" value={formMaterial.area} onChange={(e) => setFormMaterial((p) => ({ ...p, area: e.target.value }))} required>
+                <option value="">Selecione</option>
+                {areas.map((a) => (
+                  <option key={a.value} value={a.value}>{a.label}</option>
+                ))}
+              </select>
+              <input type="text" name="autor" placeholder="Autor" value={formMaterial.autor} onChange={(e) => setFormMaterial((p) => ({ ...p, autor: e.target.value }))} required />
+              <textarea name="sinopse" placeholder="Sinopse" value={formMaterial.sinopse} onChange={(e) => setFormMaterial((p) => ({ ...p, sinopse: e.target.value }))} required />
+              <input type="file" accept="application/pdf" onChange={(e) => handlePDFChange(e, "material")} required />
+              <button type="submit" disabled={isUploading}>Cadastrar</button>
+            </form>
+          </>
+        )}
 
-          <select
-            name="area"
-            value={modo === "livro" ? formData.area : materialData.area}
-            onChange={(e) => handleChange(e, modo === "material")}
-            required
-          >
-            <option value="">Selecione a Área</option>
-            {areas.map(({ label, value }) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
+        {abaAtual === "tcc" && (
+          <>
+            <h2>Cadastrar TCC</h2>
+            <form onSubmit={handleSubmitTcc}>
+              <input type="text" name="titulo" placeholder="Título" value={formTcc.titulo} onChange={(e) => setFormTcc((p) => ({ ...p, titulo: e.target.value }))} required />
+              <select name="area" value={formTcc.area} onChange={(e) => setFormTcc((p) => ({ ...p, area: e.target.value }))} required>
+                <option value="">Selecione</option>
+                {areas.map((a) => (
+                  <option key={a.value} value={a.value}>{a.label}</option>
+                ))}
+              </select>
+              <input type="text" name="autor" placeholder="Autor" value={formTcc.autor} onChange={(e) => setFormTcc((p) => ({ ...p, autor: e.target.value }))} required />
+              <textarea name="sinopse" placeholder="Sinopse" value={formTcc.sinopse} onChange={(e) => setFormTcc((p) => ({ ...p, sinopse: e.target.value }))} required />
+              <input type="file" accept="application/pdf" onChange={(e) => handlePDFChange(e, "tcc")} required />
+              <button type="submit" disabled={isUploading}>Cadastrar</button>
+            </form>
+          </>
+        )}
 
-          <input
-            type="text"
-            name="autor"
-            placeholder="Autor"
-            value={modo === "livro" ? formData.autor : materialData.autor}
-            onChange={(e) => handleChange(e, modo === "material")}
-            required
-          />
-
-          <textarea
-            name="sinopse"
-            placeholder="Sinopse"
-            value={modo === "livro" ? formData.sinopse : materialData.sinopse}
-            onChange={(e) => handleChange(e, modo === "material")}
-            required
-          />
-
-          {modo === "livro" ? (
-            <>
-              <input
-                type="text"
-                name="editora"
-                placeholder="Editora"
-                value={formData.editora}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="number"
-                name="anoPublicado"
-                placeholder="Ano de Publicação"
-                value={formData.anoPublicado}
-                onChange={handleChange}
-                min="1990"
-                required
-              />
-              <input
-                type="number"
-                name="quantidade"
-                placeholder="Quantidade"
-                value={formData.quantidade}
-                onChange={handleChange}
-                min="1"
-                required
-              />
-              <input type="file" accept="image/*" onChange={handleImageChange} />
-            </>
-          ) : (
-            <input type="file" accept="application/pdf" onChange={handlePdfChange} required />
-          )}
-
-          <div className="send">
-            <button type="submit" disabled={isUploading}>
-              {isUploading ? "Enviando..." : "Cadastrar"}
-            </button>
+        {message && (
+          <div className={`alert ${message.includes("sucesso") ? "success" : "error"}`}>
+            {message}
           </div>
-
-          {message && (
-            <div className={`alert ${message.includes("sucesso") ? "success" : "error"}`}>
-              {message}
-            </div>
-          )}
-        </form>
+        )}
       </div>
     </div>
   );
