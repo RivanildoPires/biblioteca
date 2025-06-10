@@ -5,6 +5,14 @@ footer {
   bottom: 0;
   width: 100%;
   position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+footer:hover {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 footer h3 {
@@ -12,4 +20,5 @@ footer h3 {
   text-align: center;
   padding: 10px;
   margin-top: 5px;
+  font-size: 0.9rem;
 }

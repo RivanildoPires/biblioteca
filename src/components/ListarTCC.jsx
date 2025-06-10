@@ -111,13 +111,7 @@ const ListarTCC = () => {
         </div>
       </div>
 
-      <div className="page-container">
-        <div className="foooter">
-          <h3 className="foooter-h3">
-            Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
-          </h3>
-        </div>
-      </div>
+      <Footer />
     </div>
   );
 };
