@@ -105,7 +105,7 @@ const LivrosPublicos = () => {
             ) : (
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
-                  <div className="livro">
+                  <div className="livro" key={livro.idLivro}>
                     <div className="livro-imagem-container">
                       <img
                         src={
@@ -121,7 +121,13 @@ const LivrosPublicos = () => {
                     </div>
                     <h5>{livro.titulo}</h5>
 
-                    <button className="download">Download</button>
+                    <a
+                      href={livro.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button className="download">Download</button>
+                    </a>
                   </div>
                 ))}
               </section>
@@ -129,8 +135,6 @@ const LivrosPublicos = () => {
           </main>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

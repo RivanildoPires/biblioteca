@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
-import Footer from "./Footer";
 import "./ListarTCC.css";
 import axios from "axios";
 
@@ -110,8 +109,6 @@ const ListarTCC = () => {
           </main>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

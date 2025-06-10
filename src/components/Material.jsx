@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import "./ListarTCC.css";
-import Footer from "./Footer";
 import axios from "axios";
 
 const api = axios.create({
@@ -106,7 +105,6 @@ const Material = () => {
           </main>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
