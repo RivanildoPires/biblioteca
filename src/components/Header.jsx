@@ -77,7 +77,7 @@ const Header = () => {
                     <img className="livro-img" src={livro} alt="addlivro" />
                     <button onClick={() => openModalHandler("livro")}>
                       Adicionar <br />
-                      Livro
+                      Material
                     </button>
                     {modalType === "livro" && (
                       <CadastrarLivro

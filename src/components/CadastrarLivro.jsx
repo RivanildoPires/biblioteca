@@ -147,7 +147,7 @@ const CadastrarMaterialGeral = ({ isOpen, onClose }) => {
         return;
       }
 
-      await api.post("/material", {
+      await api.post("/materialacademico", {
         ...formMaterial,
         pdfUrl,
       });
