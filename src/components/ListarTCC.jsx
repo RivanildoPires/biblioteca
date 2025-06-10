@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
-import Footer from "./Footer";
+import "./Footer2.css";
 import "./ListarTCC.css";
 import axios from "axios";
 
@@ -112,8 +112,8 @@ const ListarTCC = () => {
       </div>
 
       <div className="page-container">
-        <div className="footer">
-          <h3 className="footer-h3">
+        <div className="foooter">
+          <h3 className="foooter-h3">
             Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
           </h3>
         </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ListarLivros.css";
 import axios from "axios";
 import Header from "./Header";
-import Footer from "./Footer";
+import "./Footer2.css";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
@@ -131,8 +131,8 @@ const LivrosPublicos = () => {
       </div>
 
       <div className="page-container">
-        <div className="footer">
-          <h3 className="footer-h3">
+        <div className="foooter">
+          <h3 className="foooter-h3">
             Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
           </h3>
         </div>

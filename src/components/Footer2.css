@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-.footer {
+.foooter {
   display: flex;
   background-color: #FAFAFA;
   justify-content: center;
@@ -15,7 +15,7 @@
   text-align: center;
 }
 
-.footer-h3 {
+.foooter-h3 {
   color: #ffffff;
   text-align: center;
   padding: 10px;
