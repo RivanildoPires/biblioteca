@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ListarLivros.css";
 import axios from "axios";
+import { supabase } from "../supabaseClient";
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -21,6 +22,7 @@ const LivrosPublicos = () => {
   const [selectedArea, setSelectedArea] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [downloading, setDownloading] = useState({});
 
   useEffect(() => {
     const fetchLivros = async () => {
@@ -42,40 +44,60 @@ const LivrosPublicos = () => {
     setSelectedArea((prev) => (prev === value ? "" : value));
   };
 
+  const handleDownload = async (pdfPath, titulo, livroId) => {
+    try {
+      setDownloading((prev) => ({ ...prev, [livroId]: true }));
+
+      const { data, error } = await supabase.storage
+        .from("livros")
+        .download(pdfPath);
+
+      if (error) throw error;
+
+      const url = window.URL.createObjectURL(data);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${titulo}.pdf`.replace(/\s+/g, "_"));
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        setDownloading((prev) => ({ ...prev, [livroId]: false }));
+      }, 100);
+    } catch (err) {
+      console.error("Erro ao baixar o arquivo:", err);
+      alert("Erro ao baixar o arquivo. Tente novamente.");
+      setDownloading((prev) => ({ ...prev, [livroId]: false }));
+    }
+  };
+
   const filteredLivros = selectedArea
-    ? livros.filter((livro) => 
-        livro.area && livro.area.toLowerCase() === selectedArea.toLowerCase())
+    ? livros.filter(
+        (livro) =>
+          livro.area && livro.area.toLowerCase() === selectedArea.toLowerCase()
+      )
     : livros;
-
-  const handleReadOnline = (pdfUrl) => {
-    window.open(pdfUrl, '_blank');
-  };
-
-  const handleViewDetails = (livro) => {
-
-    console.log("Detalhes do livro:", livro);
-  };
 
   if (loading) {
     return (
-      <div>
-        <Header />
-        <div className="container loading-container">
-          <p>Carregando livros...</p>
-        </div>
-        <Footer />
+      <div className="loading">
+        <p>Carregando livros...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div>
-        <Header />
-        <div className="container error-container">
-          <p>{error}</p>
-        </div>
-        <Footer />
+      <div className="error">
+        <p>Erro: {error}</p>
+        <button onClick={() => window.location.reload()}>
+          Tentar novamente
+        </button>
       </div>
     );
   }
@@ -117,38 +139,36 @@ const LivrosPublicos = () => {
             ) : (
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
-                  <div key={livro.id} className="livro-card">
+                  <div className="livro" key={livro._id || livro.id}>
                     <div className="livro-imagem-container">
                       <img
-                        src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
+                        src={
+                          livro.imagemUrl ||
+                          "https://placehold.co/300x450?text=Sem+Imagem"
+                        }
                         alt={`Capa do livro ${livro.titulo}`}
                         onError={(e) => {
-                          e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
+                          e.target.src =
+                            "https://placehold.co/300x450?text=Imagem+Não+Disponível";
                         }}
                       />
                     </div>
-                    <div className="livro-info">
-                      <h3>{livro.titulo}</h3>
-                      <p className="autor">{livro.autor}</p>
-                      <p className="editora">{livro.editora}, {livro.anoPublicado}</p>
-                      <p className="sinopse">{livro.sinopse}</p>
-                      <div className="livro-actions">
-                        <button 
-                          onClick={() => handleViewDetails(livro)}
-                          className="btn-details"
-                        >
-                          Detalhes
-                        </button>
-                        {livro.pdfUrl && (
-                          <button 
-                            onClick={() => handleReadOnline(livro.pdfUrl)}
-                            className="btn-read"
-                          >
-                            Download
-                          </button>
-                        )}
-                      </div>
-                    </div>
+                    <h5>{livro.titulo}</h5>
+                    <button
+                      className="download"
+                      onClick={() =>
+                        handleDownload(
+                          livro.pdfUrl,
+                          livro.titulo,
+                          livro._id || livro.id
+                        )
+                      }
+                      disabled={downloading[livro._id || livro.id]}
+                    >
+                      {downloading[livro._id || livro.id]
+                        ? "Baixando..."
+                        : "Download"}
+                    </button>
                   </div>
                 ))}
               </section>
@@ -157,7 +177,11 @@ const LivrosPublicos = () => {
         </div>
       </div>
 
-      <Footer />
+      <div className="footer">
+        <h3 className="footer-h3">
+          Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
+        </h3>
+      </div>
     </div>
   );
 };

@@ -116,10 +116,14 @@ const LivroList = () => {
                     <div className="livro">
                       <div className="livro-imagem-container">
                         <img
-                          src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
+                          src={
+                            livro.imagemUrl ||
+                            "https://placehold.co/300x450?text=Sem+Imagem"
+                          }
                           alt={`Capa do livro ${livro.titulo}`}
                           onError={(e) => {
-                            e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
+                            e.target.src =
+                              "https://placehold.co/300x450?text=Imagem+Não+Disponível";
                           }}
                         />
                       </div>
@@ -133,7 +137,11 @@ const LivroList = () => {
         </div>
       </div>
 
-      <Footer/>
+      <div className="footer">
+        <h3 className="footer-h3">
+          Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
+        </h3>
+      </div>
     </div>
   );
 };
