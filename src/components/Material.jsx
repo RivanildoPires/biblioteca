@@ -106,10 +106,12 @@ const Material = () => {
           </main>
         </div>
       </div>
-      <div className="footer">
-        <h3 className="footer-h3">
-          Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
-        </h3>
+      <div className="page-container">
+        <div className="footer">
+          <h3 className="footer-h3">
+            Faculdade Católica da Paraíba. © 2025 - Todos os direitosreservados.
+          </h3>
+        </div>
       </div>
     </div>
   );

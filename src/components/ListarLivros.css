@@ -32,7 +32,7 @@
 
 .livro {
   width: 250px;
-  height: 370px;
+  min-height: 370px;
   background-color: #FAFAFA;
   border-radius: 10px;
   border: 1px solid #000;

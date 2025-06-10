@@ -208,11 +208,7 @@ const Livro = () => {
           </section>
         </main>
       </div>
-      <div className="footer">
-        <h3 className="footer-h3">
-          Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
-        </h3>
-      </div>
+      <Footer />
     </div>
   );
 };

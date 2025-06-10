@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ListarLivros.css";
 import axios from "axios";
-import { supabase } from "../supabaseClient";
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -22,7 +21,6 @@ const LivrosPublicos = () => {
   const [selectedArea, setSelectedArea] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [downloading, setDownloading] = useState({});
 
   useEffect(() => {
     const fetchLivros = async () => {
@@ -42,38 +40,6 @@ const LivrosPublicos = () => {
 
   const handleAreaClick = (value) => {
     setSelectedArea((prev) => (prev === value ? "" : value));
-  };
-
-  const handleDownload = async (pdfPath, titulo, livroId) => {
-    try {
-      setDownloading((prev) => ({ ...prev, [livroId]: true }));
-
-      const { data, error } = await supabase.storage
-        .from("livros")
-        .download(pdfPath);
-
-      if (error) throw error;
-
-      const url = window.URL.createObjectURL(data);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${titulo}.pdf`.replace(/\s+/g, "_"));
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        setDownloading((prev) => ({ ...prev, [livroId]: false }));
-      }, 100);
-    } catch (err) {
-      console.error("Erro ao baixar o arquivo:", err);
-      alert("Erro ao baixar o arquivo. Tente novamente.");
-      setDownloading((prev) => ({ ...prev, [livroId]: false }));
-    }
   };
 
   const filteredLivros = selectedArea
@@ -139,7 +105,7 @@ const LivrosPublicos = () => {
             ) : (
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
-                  <div className="livro" key={livro._id || livro.id}>
+                  <div className="livro">
                     <div className="livro-imagem-container">
                       <img
                         src={
@@ -154,21 +120,8 @@ const LivrosPublicos = () => {
                       />
                     </div>
                     <h5>{livro.titulo}</h5>
-                    <button
-                      className="download"
-                      onClick={() =>
-                        handleDownload(
-                          livro.pdfUrl,
-                          livro.titulo,
-                          livro._id || livro.id
-                        )
-                      }
-                      disabled={downloading[livro._id || livro.id]}
-                    >
-                      {downloading[livro._id || livro.id]
-                        ? "Baixando..."
-                        : "Download"}
-                    </button>
+
+                    <button className="download">Download</button>
                   </div>
                 ))}
               </section>
@@ -177,10 +130,12 @@ const LivrosPublicos = () => {
         </div>
       </div>
 
-      <div className="footer">
-        <h3 className="footer-h3">
-          Faculdade Católica da Paraíba. © 2025 - Todos os direitos reservados.
-        </h3>
+      <div className="page-container">
+        <div className="footer">
+          <h3 className="footer-h3">
+            Faculdade Católica da Paraíba. © 2025 - Todos os direitosreservados.
+          </h3>
+        </div>
       </div>
     </div>
   );
