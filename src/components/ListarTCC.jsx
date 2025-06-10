@@ -1,8 +1,54 @@
+import { useEffect, useState } from "react";
 import Header from "./Header";
-import "./ListarTCC.css";
 import Footer from "./Footer";
+import "./ListarTCC.css";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+});
+
+const areas = [
+  { label: "Ciências da Computação", value: "computacao" },
+  { label: "Direito", value: "direito" },
+  { label: "Educação Física", value: "edfisica" },
+  { label: "Marketing", value: "marketing" },
+  { label: "Matemática", value: "matematica" },
+];
 
 const ListarTCC = () => {
+  const [tccs, setTccs] = useState([]);
+  const [selectedArea, setSelectedArea] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTccs = async () => {
+      try {
+        const response = await api.get("/tcc");
+        setTccs(response.data);
+      } catch (err) {
+        setError("Erro ao carregar TCCs. Tente novamente mais tarde.");
+        console.error("Erro ao buscar TCCs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTccs();
+  }, []);
+
+  const handleAreaClick = (value) => {
+    setSelectedArea((prev) => (prev === value ? "" : value));
+  };
+
+  const filteredTccs = selectedArea
+    ? tccs.filter(
+        (tcc) =>
+          tcc.area && tcc.area.toLowerCase() === selectedArea.toLowerCase()
+      )
+    : tccs;
+
   return (
     <div>
       <Header />
@@ -14,37 +60,57 @@ const ListarTCC = () => {
             <div className="line"></div>
           </div>
           <ul>
-            <li>Ciências da Computação</li>
-            <li>Direito</li>
-            <li>Educação Fisica</li>
-            <li>Marketing</li>
+            {areas.map(({ label, value }) => (
+              <li
+                key={value}
+                onClick={() => handleAreaClick(value)}
+                style={{
+                  cursor: "pointer",
+                  fontWeight: selectedArea === value ? "bold" : "normal",
+                  color: selectedArea === value ? "#007BFF" : "inherit",
+                }}
+              >
+                {label}
+              </li>
+            ))}
           </ul>
         </aside>
+
         <div className="container-main">
           <main className="main-content">
             <section className="section-tcc">
-              <div className="tcc">
-                <h3>Estudo do Software de Gestão Trello</h3>
-                <h5>Autor: </h5>
-                <h5>Publicado: </h5>
-                <div className="tcc-disc">
-                  <p>
-                    Este Trabalho de Conclusão de Curso (TCC) descreve o
-                    desenvolvimento de um software de gestão empresarial. O
-                    objetivo é melhorar a eficiència dos processos internos da
-                    organização. A aplicação foi criada utilizando tecnologias
-                    modernas e seguindo metodologías ágeís.{" "}
-                  </p>
-                </div>
+              {loading && <p>Carregando TCCs...</p>}
+              {error && <p style={{ color: "red" }}>{error}</p>}
 
-                <button className="download">Baixar PDF</button>
-              </div>
-              <div className="tcc"></div>
-              <div className="tcc"></div>
+              {!loading && !error && filteredTccs.length === 0 && (
+                <p>Nenhum TCC encontrado para a área selecionada.</p>
+              )}
+
+              {!loading &&
+                !error &&
+                filteredTccs.map((tcc) => (
+                  <div key={tcc.idTcc} className="tcc">
+                    <h3>{tcc.titulo}</h3>
+                    <div className="line"></div>
+                    <h5>Autor: {tcc.autor}</h5>
+                    <h5>Área: {tcc.area}</h5>
+                    <div className="tcc-disc">
+                      <p>{tcc.sinopse}</p>
+                    </div>
+                    <a
+                      href={tcc.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button className="download">Baixar PDF</button>
+                    </a>
+                  </div>
+                ))}
             </section>
           </main>
         </div>
       </div>
+
       <Footer />
     </div>
   );

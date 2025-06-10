@@ -40,15 +40,15 @@
 .tcc {
   width: 250px;
   height: 390px;
-  background-color: #cfcfcf;
+  background-color: #FAFAFA;
   border-radius: 10px;
   text-align: center;
 }
 
 .tcc-disc {
-  background-color: white;
+  background-color: #FEFEFE;
   width: 230px;
-  height: 180px;
+  min-height: 180px;
   margin: 16px auto 20px;
   border: 1px solid #817e7e;
 }

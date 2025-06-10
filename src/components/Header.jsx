@@ -10,7 +10,6 @@ import CadastrarUsuario from "./CadastrarUsuario";
 import cadastroU from "../assets/cadastroU.png";
 import CadastrarLivro from "./CadastrarLivro";
 import LivrosReservados from "./LivrosReservados";
-import LivrosPublicos from "./LivrosPublicos";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);

@@ -1,8 +1,54 @@
+import { useEffect, useState } from "react";
 import Header from "./Header";
-import "./ListarTCC.css"
+import "./ListarTCC.css";
 import Footer from "./Footer";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+});
+
+const areas = [
+  { label: "Ciências da Computação", value: "computacao" },
+  { label: "Direito", value: "direito" },
+  { label: "Educação Física", value: "edfisica" },
+  { label: "Marketing", value: "marketing" },
+  { label: "Matemática", value: "matematica" },
+];
 
 const Material = () => {
+  const [materiais, setMateriais] = useState([]);
+  const [selectedArea, setSelectedArea] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMateriais = async () => {
+      try {
+        const response = await api.get("/materialacademico");
+        setMateriais(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Erro ao carregar materiais. Tente novamente mais tarde.");
+        console.error(err);
+        setLoading(false);
+      }
+    };
+
+    fetchMateriais();
+  }, []);
+
+  const handleAreaClick = (area) => {
+    setSelectedArea((prev) => (prev === area ? "" : area));
+  };
+
+  const filteredMateriais = selectedArea
+    ? materiais.filter(
+        (mat) =>
+          mat.area && mat.area.toLowerCase() === selectedArea.toLowerCase()
+      )
+    : materiais;
+
   return (
     <div>
       <Header />
@@ -13,35 +59,54 @@ const Material = () => {
             <div className="line"></div>
           </div>
           <ul>
-            <li>Ciências da Computação</li>
-            <li>Direito</li>
-            <li>Educação Fisica</li>
-            <li>Marketing</li>
-            <li>Matemática</li>
+            {areas.map((area) => (
+              <li
+                key={area.value}
+                style={{
+                  cursor: "pointer",
+                  fontWeight: selectedArea === area.value ? "bold" : "normal",
+                }}
+                onClick={() => handleAreaClick(area.value)}
+              >
+                {area.label}
+              </li>
+            ))}
           </ul>
         </aside>
         <div className="container-main">
           <main className="main-content">
             <section className="section-tcc">
-              <div className="tcc">
-                <h3>Questões de calculo 1</h3>
-                <h5>Autor: </h5>
-                <h5>Publicado: </h5>
-                <div className="tcc-disc">
-                  <p>
-                    Introducao ao cálculo, focando em limites, derivadas e a introdução básica das integrais, com algumas aplicações práticas.
-                  </p>
-                </div>
-
-                <button className="download">Baixar PDF</button>
-              </div>
-              <div className="tcc"></div>
-              <div className="tcc"></div>
+              {loading ? (
+                <p>Carregando materiais...</p>
+              ) : error ? (
+                <p>{error}</p>
+              ) : filteredMateriais.length === 0 ? (
+                <p>Nenhum material encontrado para esta área.</p>
+              ) : (
+                filteredMateriais.map((mat) => (
+                  <div className="tcc" key={mat.idMaterialAcademico}>
+                    <h3>{mat.titulo}</h3>
+                    <div className="line"></div>
+                    <h5>Autor: {mat.autor}</h5>
+                    <h5>Área: {mat.area}</h5>
+                    <div className="tcc-disc">
+                      <p>{mat.sinopse}</p>
+                    </div>
+                    <a
+                      href={mat.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button className="download">Baixar PDF</button>
+                    </a>
+                  </div>
+                ))
+              )}
             </section>
           </main>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

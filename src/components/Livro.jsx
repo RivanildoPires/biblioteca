@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./Livro.css";
-import faculdade from "../assets/faculdade.png";
 import Header from "./Header";
 import Footer from "./Footer";
 import axios from "axios";

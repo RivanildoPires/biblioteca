@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./ListarLivros.css";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -19,33 +18,24 @@ const areas = [
 
 const LivrosPublicos = () => {
   const [livros, setLivros] = useState([]);
+  const [selectedArea, setSelectedArea] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedArea, setSelectedArea] = useState("");
-
-  const fetchLivros = async () => {
-    try {
-      const response = await api.get("/livro");
-      if (response.status === 204) {
-        setError("Nenhum livro encontrado");
-        setLivros([]);
-      } else {
-        setLivros(response.data);
-        setError(null);
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.message || err.message || "Erro ao buscar livros"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchLivros = async () => {
+      try {
+        const response = await api.get("/livropublico");
+        setLivros(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Erro ao carregar livros. Tente novamente mais tarde.");
+        setLoading(false);
+        console.error("Erro ao buscar livros:", err);
+      }
+    };
+
     fetchLivros();
-    const intervalId = setInterval(fetchLivros, 200000);
-    return () => clearInterval(intervalId);
   }, []);
 
   const handleAreaClick = (value) => {
@@ -53,24 +43,39 @@ const LivrosPublicos = () => {
   };
 
   const filteredLivros = selectedArea
-    ? livros.filter((livro) => livro.area?.toLowerCase() === selectedArea)
+    ? livros.filter((livro) => 
+        livro.area && livro.area.toLowerCase() === selectedArea.toLowerCase())
     : livros;
+
+  const handleReadOnline = (pdfUrl) => {
+    window.open(pdfUrl, '_blank');
+  };
+
+  const handleViewDetails = (livro) => {
+
+    console.log("Detalhes do livro:", livro);
+  };
 
   if (loading) {
     return (
-      <div className="loading">
-        <p>Carregando livros...</p>
+      <div>
+        <Header />
+        <div className="container loading-container">
+          <p>Carregando livros...</p>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="error">
-        <p>Erro: {error}</p>
-        <button onClick={() => window.location.reload()}>
-          Tentar novamente
-        </button>
+      <div>
+        <Header />
+        <div className="container error-container">
+          <p>{error}</p>
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -112,20 +117,39 @@ const LivrosPublicos = () => {
             ) : (
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
-                  <Link key={livro.idLivro} to={`/livro/${livro.idLivro}`}>
-                    <div className="livro">
-                      <div className="livro-imagem-container">
-                        <img
-                          src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
-                          alt={`Capa do livro ${livro.titulo}`}
-                          onError={(e) => {
-                            e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
-                          }}
-                        />
-                      </div>
-                      <h5>{livro.titulo}</h5>
+                  <div key={livro.id} className="livro-card">
+                    <div className="livro-imagem-container">
+                      <img
+                        src={livro.imagemUrl || "https://placehold.co/300x450?text=Sem+Imagem"}
+                        alt={`Capa do livro ${livro.titulo}`}
+                        onError={(e) => {
+                          e.target.src = "https://placehold.co/300x450?text=Imagem+Não+Disponível";
+                        }}
+                      />
                     </div>
-                  </Link>
+                    <div className="livro-info">
+                      <h3>{livro.titulo}</h3>
+                      <p className="autor">{livro.autor}</p>
+                      <p className="editora">{livro.editora}, {livro.anoPublicado}</p>
+                      <p className="sinopse">{livro.sinopse}</p>
+                      <div className="livro-actions">
+                        <button 
+                          onClick={() => handleViewDetails(livro)}
+                          className="btn-details"
+                        >
+                          Detalhes
+                        </button>
+                        {livro.pdfUrl && (
+                          <button 
+                            onClick={() => handleReadOnline(livro.pdfUrl)}
+                            className="btn-read"
+                          >
+                            Download
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </section>
             )}
@@ -133,7 +157,7 @@ const LivrosPublicos = () => {
         </div>
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 };

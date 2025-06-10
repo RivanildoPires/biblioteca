@@ -1,17 +1,9 @@
 import { useState } from "react";
 import "./TelaInicial.css";
-import logo from "../assets/logo.png";
-import livro from "../assets/livro.png";
-import usuario from "../assets/usuario.png";
-import sair from "../assets/sair.png";
-import { Link } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 
 const TelaInicial = () => {
-  const [name, setName] = useState("Rivanildo");
-  const [busca, setBusca] = useState("");
-
   return (
     <div>
       <Header />
