@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import "./ListarTCC.css";
-import "./Footer2.css";
+import Footer from "./Footer";
 import axios from "axios";
 
 const api = axios.create({
