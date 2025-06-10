@@ -106,7 +106,12 @@ const LivrosPublicos = () => {
               <section className="section-livros">
                 {filteredLivros.map((livro) => (
                   <div className="livro" key={livro.idLivro}>
-                    <div className="livro-imagem-container">
+                    <a
+                      href={livro.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="livro-imagem-container"
+                    >
                       <img
                         src={
                           livro.imagemUrl ||
@@ -118,16 +123,8 @@ const LivrosPublicos = () => {
                             "https://placehold.co/300x450?text=Imagem+Não+Disponível";
                         }}
                       />
-                    </div>
-                    <h5>{livro.titulo}</h5>
-
-                    <a
-                      href={livro.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <button className="download">Download</button>
                     </a>
+                    <h5>{livro.titulo}</h5>
                   </div>
                 ))}
               </section>
